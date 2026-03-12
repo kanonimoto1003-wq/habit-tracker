@@ -1,918 +1,643 @@
-import React, { useState } from 'react';
-import { Plus, X, ChevronLeft, ChevronRight, BarChart3, Calendar } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-
-export default function HabitTracker() {
-  const [mode, setMode] = useState(null);
-  const [habits, setHabits] = useState(() => {
-    const saved = localStorage.getItem('habits');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [goals, setGoals] = useState(() => {
-    const saved = localStorage.getItem('goals');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [habitView, setHabitView] = useState('record');
-  const [goalView, setGoalView] = useState('record');
-  const [selectedGoalTag, setSelectedGoalTag] = useState('all');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedGoalDate, setSelectedGoalDate] = useState(new Date().toISOString().split('T')[0]);
-  const [showHabitForm, setShowHabitForm] = useState(false);
-  const [showGoalForm, setShowGoalForm] = useState(false);
-  const [showHabitCalendar, setShowHabitCalendar] = useState(false);
-  const [showGoalCalendar, setShowGoalCalendar] = useState(false);
-  const [newHabitName, setNewHabitName] = useState('');
-  const [newGoalName, setNewGoalName] = useState('');
-  const [newGoalTag, setNewGoalTag] = useState('');
-  const [newGoalMin, setNewGoalMin] = useState('');
-  const [newGoalMore, setNewGoalMore] = useState('');
-  const [newGoalMax, setNewGoalMax] = useState('');
-  const [goalStatsPeriod, setGoalStatsPeriod] = useState('month');
-
-  const today = new Date().toISOString().split('T')[0];
-  const tags = ['健康', '学習', '仕事', '趣味', '運動'];
-  
-  const tagColors = {
-    '健康': { bg: 'bg-orange-600', text: 'text-white', border: 'border-orange-500' },
-    '学習': { bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-500' },
-    '仕事': { bg: 'bg-black', text: 'text-white', border: 'border-gray-600' },
-    '趣味': { bg: 'bg-green-600', text: 'text-white', border: 'border-green-500' },
-    '運動': { bg: 'bg-orange-600', text: 'text-white', border: 'border-orange-500' }
-  };
-
-  const levelColors = {
-    max: '#16a34a',
-    more: '#2563eb',
-    min: '#ea580c',
-    none: '#4b5563'
-  };
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr + 'T12:00:00');
-    return date.toLocaleString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short', timeZone: 'Asia/Tokyo' });
-  };
-
-  const changeDate = (dateStr, days) => {
-    const date = new Date(dateStr + 'T12:00:00');
-    date.setDate(date.getDate() + days);
-    const newDate = date.toISOString().split('T')[0];
-    return newDate;
-  };
-
-  const addHabit = () => {
-    if (newHabitName.trim()) {
-      const updated = [...habits, { id: Date.now(), name: newHabitName, records: {} }];
-      setHabits(updated);
-      localStorage.setItem('habits', JSON.stringify(updated));
-      setNewHabitName('');
-      setShowHabitForm(false);
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROGRESS - ハビットトラッカー</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.0/recharts.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-  };
-
-  const toggleHabit = (habitId) => {
-    const updated = habits.map(h => 
-      h.id === habitId 
-        ? { ...h, records: { ...h.records, [selectedDate]: !h.records[selectedDate] } }
-        : h
-    );
-    setHabits(updated);
-    localStorage.setItem('habits', JSON.stringify(updated));
-  };
-
-  const deleteHabit = (habitId) => {
-    const updated = habits.filter(h => h.id !== habitId);
-    setHabits(updated);
-    localStorage.setItem('habits', JSON.stringify(updated));
-  };
-
-  const addGoal = () => {
-    if (newGoalName.trim() && newGoalMin && newGoalMore && newGoalMax) {
-      const updated = [...goals, {
-        id: Date.now(),
-        name: newGoalName,
-        tag: newGoalTag || selectedGoalTag,
-        min: newGoalMin,
-        more: newGoalMore,
-        max: newGoalMax,
-        records: {}
-      }];
-      setGoals(updated);
-      localStorage.setItem('goals', JSON.stringify(updated));
-      setNewGoalName('');
-      setNewGoalMin('');
-      setNewGoalMore('');
-      setNewGoalMax('');
-      setShowGoalForm(false);
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #111827;
+      color: #fff;
     }
-  };
-
-  const recordGoal = (goalId, level) => {
-    const updated = goals.map(g =>
-      g.id === goalId
-        ? { ...g, records: { ...g.records, [selectedGoalDate]: level } }
-        : g
-    );
-    setGoals(updated);
-    localStorage.setItem('goals', JSON.stringify(updated));
-  };
-
-  const deleteGoal = (goalId) => {
-    const updated = goals.filter(g => g.id !== goalId);
-    setGoals(updated);
-    localStorage.setItem('goals', JSON.stringify(updated));
-  };
-
-  const getWeekStats = () => {
-    const weekData = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      const completedCount = habits.filter(h => h.records[dateStr]).length;
-      const total = habits.length;
-      const percentage = total === 0 ? 0 : Math.round((completedCount / total) * 100);
-      weekData.push({ date: dateStr.slice(5), percentage });
+    
+    #root {
+      width: 100%;
+      min-height: 100vh;
     }
-    return weekData;
-  };
+    
+    .min-h-screen { min-height: 100vh; }
+    .bg-black { background-color: #000; }
+    .bg-gray-900 { background-color: #111827; }
+    .bg-gray-800 { background-color: #1f2937; }
+    .bg-gray-700 { background-color: #374151; }
+    .text-white { color: #fff; }
+    .text-gray-300 { color: #d1d5db; }
+    .text-gray-400 { color: #9ca3af; }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .flex { display: flex; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .flex-1 { flex: 1; }
+    .rounded { border-radius: 0.25rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .border { border: 1px solid; }
+    .border-gray-700 { border-color: #374151; }
+    .border-gray-600 { border-color: #4b5563; }
+    .border-blue-500 { border-color: #3b82f6; }
+    .border-orange-500 { border-color: #f97316; }
+    .border-green-500 { border-color: #22c55e; }
+    .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    .w-full { width: 100%; }
+    .max-w-md { max-width: 28rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .max-w-5xl { max-width: 64rem; }
+    .mx-auto { margin: 0 auto; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    input, select {
+      font-family: inherit;
+      color: white;
+      background-color: #374151;
+      border: 1px solid #4b5563;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+    }
+    input:focus, select:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: #3b82f6;
+    }
+    .bg-blue-600 { background-color: #2563eb; }
+    .bg-blue-700 { background-color: #1d4ed8; }
+    .bg-orange-600 { background-color: #ea580c; }
+    .bg-orange-700 { background-color: #c2410c; }
+    .bg-green-600 { background-color: #16a34a; }
+    .text-blue-400 { color: #60a5fa; }
+    .text-orange-400 { color: #fb923c; }
+    .text-green-400 { color: #4ade80; }
+    .overflow-x-auto { overflow-x: auto; }
+    .pb-2 { padding-bottom: 0.5rem; }
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .z-10 { z-index: 10; }
+    .mix-blend-multiply { mix-blend-mode: multiply; }
+    .filter { filter: brightness(1); }
+    .blur-3xl { filter: blur(64px); }
+    .opacity-10 { opacity: 0.1; }
+    .tracking-tighter { letter-spacing: -0.05em; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-3xl { font-size: 1.875rem; }
+    .text-6xl { font-size: 3.75rem; }
+    .font-black { font-weight: 900; }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
 
-  const getHabitStats = () => {
-    return habits.map(habit => {
-      let completed = 0;
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        if (habit.records[dateStr]) completed++;
-      }
-      return {
-        name: habit.name,
-        achievement: Math.round((completed / 7) * 100),
-        completed
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    function HabitTracker() {
+      const [mode, setMode] = useState(null);
+      const [habits, setHabits] = useState(() => {
+        try {
+          const saved = localStorage.getItem('habits');
+          return saved ? JSON.parse(saved) : [];
+        } catch {
+          return [];
+        }
+      });
+      const [goals, setGoals] = useState(() => {
+        try {
+          const saved = localStorage.getItem('goals');
+          return saved ? JSON.parse(saved) : [];
+        } catch {
+          return [];
+        }
+      });
+      const [habitView, setHabitView] = useState('record');
+      const [goalView, setGoalView] = useState('record');
+      const [selectedGoalTag, setSelectedGoalTag] = useState('all');
+      const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+      const [selectedGoalDate, setSelectedGoalDate] = useState(new Date().toISOString().split('T')[0]);
+      const [showHabitForm, setShowHabitForm] = useState(false);
+      const [showGoalForm, setShowGoalForm] = useState(false);
+      const [showHabitCalendar, setShowHabitCalendar] = useState(false);
+      const [showGoalCalendar, setShowGoalCalendar] = useState(false);
+      const [newHabitName, setNewHabitName] = useState('');
+      const [newGoalName, setNewGoalName] = useState('');
+      const [newGoalTag, setNewGoalTag] = useState('');
+      const [newGoalMin, setNewGoalMin] = useState('');
+      const [newGoalMore, setNewGoalMore] = useState('');
+      const [newGoalMax, setNewGoalMax] = useState('');
+      const [goalStatsPeriod, setGoalStatsPeriod] = useState('month');
+
+      const today = new Date().toISOString().split('T')[0];
+      const tags = ['健康', '学習', '仕事', '趣味', '運動'];
+
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr + 'T12:00:00');
+        return date.toLocaleString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short', timeZone: 'Asia/Tokyo' });
       };
-    });
-  };
 
-  const calculateGoalStats = (days) => {
-    return (tag = 'all') => {
-      const filtered = tag === 'all' ? goals : goals.filter(g => g.tag === tag);
-      
-      return filtered.map(goal => {
-        let minCount = 0, moreCount = 0, maxCount = 0, totalRecordedDays = 0;
-        for (let i = days - 1; i >= 0; i--) {
+      const changeDate = (dateStr, days) => {
+        const date = new Date(dateStr + 'T12:00:00');
+        date.setDate(date.getDate() + days);
+        return date.toISOString().split('T')[0];
+      };
+
+      const addHabit = () => {
+        if (newHabitName.trim()) {
+          const updated = [...habits, { id: Date.now(), name: newHabitName, records: {} }];
+          setHabits(updated);
+          localStorage.setItem('habits', JSON.stringify(updated));
+          setNewHabitName('');
+          setShowHabitForm(false);
+        }
+      };
+
+      const toggleHabit = (habitId) => {
+        const updated = habits.map(h => 
+          h.id === habitId 
+            ? { ...h, records: { ...h.records, [selectedDate]: !h.records[selectedDate] } }
+            : h
+        );
+        setHabits(updated);
+        localStorage.setItem('habits', JSON.stringify(updated));
+      };
+
+      const deleteHabit = (habitId) => {
+        const updated = habits.filter(h => h.id !== habitId);
+        setHabits(updated);
+        localStorage.setItem('habits', JSON.stringify(updated));
+      };
+
+      const addGoal = () => {
+        if (newGoalName.trim() && newGoalMin && newGoalMore && newGoalMax) {
+          const updated = [...goals, {
+            id: Date.now(),
+            name: newGoalName,
+            tag: newGoalTag || selectedGoalTag,
+            min: newGoalMin,
+            more: newGoalMore,
+            max: newGoalMax,
+            records: {}
+          }];
+          setGoals(updated);
+          localStorage.setItem('goals', JSON.stringify(updated));
+          setNewGoalName('');
+          setNewGoalMin('');
+          setNewGoalMore('');
+          setNewGoalMax('');
+          setShowGoalForm(false);
+        }
+      };
+
+      const recordGoal = (goalId, level) => {
+        const updated = goals.map(g =>
+          g.id === goalId
+            ? { ...g, records: { ...g.records, [selectedGoalDate]: level } }
+            : g
+        );
+        setGoals(updated);
+        localStorage.setItem('goals', JSON.stringify(updated));
+      };
+
+      const deleteGoal = (goalId) => {
+        const updated = goals.filter(g => g.id !== goalId);
+        setGoals(updated);
+        localStorage.setItem('goals', JSON.stringify(updated));
+      };
+
+      const getWeekStats = () => {
+        const weekData = [];
+        for (let i = 6; i >= 0; i--) {
           const date = new Date();
           date.setDate(date.getDate() - i);
           const dateStr = date.toISOString().split('T')[0];
-          const level = goal.records[dateStr];
-          if (level === 'min') { minCount++; totalRecordedDays++; }
-          if (level === 'more') { moreCount++; totalRecordedDays++; }
-          if (level === 'max') { maxCount++; totalRecordedDays++; }
+          const completedCount = habits.filter(h => h.records[dateStr]).length;
+          const total = habits.length;
+          const percentage = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+          weekData.push({ date: dateStr.slice(5), percentage });
         }
-        const totalAchieved = minCount + moreCount + maxCount;
-        const displayDays = goalStatsPeriod === 'month' ? days : (totalRecordedDays > 0 ? totalRecordedDays : 1);
-        
-        return {
-          name: goal.name,
-          tag: goal.tag,
-          id: goal.id,
-          minCount,
-          moreCount,
-          maxCount,
-          totalAchieved,
-          totalDays: displayDays,
-          achievement: Math.round((totalAchieved / displayDays) * 100),
-          data: [
-            { name: 'MAX', value: maxCount, color: levelColors.max },
-            { name: 'MORE', value: moreCount, color: levelColors.more },
-            { name: 'MIN', value: minCount, color: levelColors.min },
-            { name: '未達成', value: displayDays - totalAchieved, color: levelColors.none }
-          ]
-        };
-      });
-    };
-  };
-
-  const getGoalStats = goalStatsPeriod === 'month' ? calculateGoalStats(30) : calculateGoalStats(30);
-
-  const getOverallStats = (tag = 'all') => {
-    let stats;
-    if (goalStatsPeriod === 'week') {
-      stats = getWeekGoalStats(tag);
-    } else {
-      stats = getGoalStats(tag);
-    }
-    
-    if (stats.length === 0) return { totalMax: 0, totalMore: 0, totalMin: 0, totalDays: 0 };
-    
-    let totalMax = 0, totalMore = 0, totalMin = 0, totalDays = 0;
-    
-    stats.forEach(stat => {
-      totalMax += stat.maxCount;
-      totalMore += stat.moreCount;
-      totalMin += stat.minCount;
-      totalDays += stat.totalDays;
-    });
-    
-    return { totalMax, totalMore, totalMin, totalDays };
-  };
-
-  const getWeekGoalStats = (tag = 'all') => {
-    const filtered = tag === 'all' ? goals : goals.filter(g => g.tag === tag);
-    
-    return filtered.map(goal => {
-      let minCount = 0, moreCount = 0, maxCount = 0;
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        const level = goal.records[dateStr];
-        if (level === 'min') minCount++;
-        if (level === 'more') moreCount++;
-        if (level === 'max') maxCount++;
-      }
-      const totalAchieved = minCount + moreCount + maxCount;
-      
-      return {
-        name: goal.name,
-        tag: goal.tag,
-        id: goal.id,
-        minCount,
-        moreCount,
-        maxCount,
-        totalAchieved,
-        totalDays: 7,
-        achievement: Math.round((totalAchieved / 7) * 100),
-        data: [
-          { name: 'MAX', value: maxCount, color: levelColors.max },
-          { name: 'MORE', value: moreCount, color: levelColors.more },
-          { name: 'MIN', value: minCount, color: levelColors.min },
-          { name: '未達成', value: 7 - totalAchieved, color: levelColors.none }
-        ]
+        return weekData;
       };
-    });
-  };
 
-  if (!mode) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-        
-        <div className="relative z-10 bg-gray-900 rounded-2xl shadow-2xl p-12 max-w-md w-full border border-gray-800">
-          <div className="text-center mb-12">
-            <h1 className="text-6xl font-black text-white mb-4 tracking-tighter">
-              <span className="bg-gradient-to-r from-blue-400 via-orange-400 to-green-400 bg-clip-text text-transparent">
-                PROGRESS
-              </span>
-            </h1>
-            <p className="text-gray-400 text-lg">毎日の成長を追跡する</p>
-          </div>
-          
-          <div className="space-y-4">
-            <button
-              onClick={() => { setMode('habits'); setHabitView('record'); setSelectedDate(today); }}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 border border-blue-500 shadow-lg"
-            >
-              <span className="text-2xl mb-1 block">📋</span>
-              習慣トラッカー
-              <p className="text-sm font-normal mt-1 opacity-90">日々の習慣を記録</p>
-            </button>
-            
-            <button
-              onClick={() => { setMode('goals'); setGoalView('record'); setSelectedGoalTag('all'); setSelectedGoalDate(today); }}
-              className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 border border-orange-500 shadow-lg"
-            >
-              <span className="text-2xl mb-1 block">🎯</span>
-              目標トラッカー
-              <p className="text-sm font-normal mt-1 opacity-90">レベル別目標を追跡</p>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+      const getHabitStats = () => {
+        return habits.map(habit => {
+          let completed = 0;
+          for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            if (habit.records[dateStr]) completed++;
+          }
+          return {
+            name: habit.name,
+            achievement: Math.round((completed / 7) * 100),
+            completed
+          };
+        });
+      };
 
-  if (mode === 'habits') {
-    return (
-      <div className="min-h-screen bg-gray-900 p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <button onClick={() => setMode(null)} className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-300">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-3xl font-bold text-white">習慣トラッカー</h1>
-          </div>
-
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setHabitView('record')}
-              className={`px-6 py-3 rounded-lg font-bold transition ${habitView === 'record' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-            >
-              記録
-            </button>
-            <button
-              onClick={() => setHabitView('dashboard')}
-              className={`px-6 py-3 rounded-lg font-bold transition flex items-center gap-2 ${habitView === 'dashboard' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              分析
-            </button>
-          </div>
-
-          {habitView === 'record' ? (
-            <>
-              <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700 flex items-center justify-between">
-                <button
-                  onClick={() => setSelectedDate(changeDate(selectedDate, -1))}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <ChevronLeft className="w-6 h-6 text-gray-300" />
-                </button>
-                <div className="text-center flex-1">
-                  <p className="text-xl font-bold text-white">{formatDate(selectedDate)}</p>
+      return (
+        <div className="min-h-screen bg-gray-900">
+          {!mode && (
+            <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
+              <div style={{position: 'absolute', top: 0, right: 0, width: '320px', height: '320px', background: '#2563eb', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
+              <div style={{position: 'absolute', bottom: 0, left: 0, width: '320px', height: '320px', background: '#ea580c', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
+              
+              <div style={{position: 'relative', zIndex: 10, background: '#111827', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '3rem', maxWidth: '28rem', width: '100%', border: '1px solid #1f2937'}}>
+                <div style={{textAlign: 'center', marginBottom: '3rem'}}>
+                  <h1 style={{fontSize: '3.75rem', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.05em', background: 'linear-gradient(to right, #60a5fa, #fb923c, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'}}>
+                    PROGRESS
+                  </h1>
+                  <p style={{color: '#9ca3af', fontSize: '1.125rem'}}>毎日の成長を追跡する</p>
                 </div>
-                <button
-                  onClick={() => setShowHabitCalendar(!showHabitCalendar)}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <Calendar className="w-6 h-6 text-gray-300" />
-                </button>
-                <button
-                  onClick={() => setSelectedDate(changeDate(selectedDate, 1))}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <ChevronRight className="w-6 h-6 text-gray-300" />
-                </button>
-              </div>
-
-              {showHabitCalendar && (
-                <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">日付を選択</h3>
-                  <div className="grid grid-cols-7 gap-2">
-                    {['日', '月', '火', '水', '木', '金', '土'].map(day => (
-                      <div key={day} className="text-center font-bold text-gray-400 text-sm p-2">
-                        {day}
-                      </div>
-                    ))}
-                    {(() => {
-                      const date = new Date(selectedDate + 'T12:00:00');
-                      const year = date.getFullYear();
-                      const month = date.getMonth();
-                      const firstDay = new Date(year, month, 1);
-                      const lastDay = new Date(year, month + 1, 0);
-                      const daysInMonth = lastDay.getDate();
-                      const startingDayOfWeek = firstDay.getDay();
-
-                      const days = [];
-                      for (let i = 0; i < startingDayOfWeek; i++) {
-                        days.push(null);
-                      }
-                      for (let i = 1; i <= daysInMonth; i++) {
-                        days.push(i);
-                      }
-
-                      return days.map((day, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            if (day) {
-                              const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                              setSelectedDate(newDate);
-                              setShowHabitCalendar(false);
-                            }
-                          }}
-                          className={`h-10 rounded font-bold text-sm transition ${
-                            day && `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` === selectedDate
-                              ? 'bg-blue-600 text-white'
-                              : day
-                              ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                              : 'bg-gray-900 cursor-default'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ));
-                    })()}
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-gray-800 rounded-lg p-6 shadow mb-6 border border-gray-700">
-                <h2 className="text-lg font-bold text-white mb-4">{formatDate(selectedDate)}</h2>
-                <div className="space-y-3">
-                  {habits.length === 0 ? (
-                    <p className="text-gray-400 text-center py-6">習慣がまだ登録されていません</p>
-                  ) : (
-                    habits.map(habit => (
-                      <div key={habit.id} className="bg-gray-700 rounded-lg p-4 flex items-center justify-between border border-gray-600 hover:border-gray-500 transition">
-                        <div className="flex items-center gap-4 flex-1">
-                          <input
-                            type="checkbox"
-                            checked={!!habit.records[selectedDate]}
-                            onChange={() => toggleHabit(habit.id)}
-                            className="w-6 h-6 cursor-pointer accent-green-500"
-                          />
-                          <span className={`font-medium ${habit.records[selectedDate] ? 'line-through text-gray-500' : 'text-gray-100'}`}>
-                            {habit.name}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => deleteHabit(habit.id)}
-                          className="p-2 hover:bg-red-900 rounded transition"
-                        >
-                          <X className="w-5 h-5 text-red-500" />
-                        </button>
-                      </div>
-                    ))
-                  )}
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                  <button
+                    onClick={() => { setMode('habits'); setHabitView('record'); setSelectedDate(today); }}
+                    style={{background: 'linear-gradient(to right, #2563eb, #1d4ed8)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #3b82f6', fontWeight: 'bold', transform: 'scale(1)', transition: 'all 0.2s'}}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <span style={{fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem'}}>📋</span>
+                    習慣トラッカー
+                    <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>日々の習慣を記録</p>
+                  </button>
+                  
+                  <button
+                    onClick={() => { setMode('goals'); setGoalView('record'); setSelectedGoalTag('all'); setSelectedGoalDate(today); }}
+                    style={{background: 'linear-gradient(to right, #ea580c, #c2410c)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #f97316', fontWeight: 'bold', transform: 'scale(1)', transition: 'all 0.2s'}}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <span style={{fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem'}}>🎯</span>
+                    目標トラッカー
+                    <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>レベル別目標を追跡</p>
+                  </button>
                 </div>
               </div>
-
-              {!showHabitForm ? (
-                <button
-                  onClick={() => setShowHabitForm(true)}
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition border border-gray-600"
-                >
-                  <Plus className="w-5 h-5" />
-                  習慣を追加
-                </button>
-              ) : (
-                <div className="bg-gray-800 rounded-lg p-6 shadow border border-gray-700">
-                  <h2 className="text-lg font-bold text-white mb-4">新しい習慣を追加</h2>
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="習慣の名前"
-                      value={newHabitName}
-                      onChange={(e) => setNewHabitName(e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={addHabit}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition"
-                      >
-                        追加
-                      </button>
-                      <button
-                        onClick={() => setShowHabitForm(false)}
-                        className="flex-1 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 rounded transition"
-                      >
-                        キャンセル
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <p className="text-gray-400 text-sm">本日の達成率</p>
-                  <p className="text-3xl font-bold text-blue-400">
-                    {habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%
-                  </p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <p className="text-gray-400 text-sm">登録習慣数</p>
-                  <p className="text-3xl font-bold text-orange-400">{habits.length}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <p className="text-gray-400 text-sm">本週完了数</p>
-                  <p className="text-3xl font-bold text-green-400">{getWeekStats().reduce((a, b) => a + (b.percentage > 0 ? 1 : 0), 0)}</p>
-                </div>
-              </div>
-
-              {habits.length > 0 && (
-                <div className="bg-gray-800 rounded-lg p-6 shadow mb-6 border border-gray-700">
-                  <h2 className="text-lg font-bold text-white mb-4">今週の達成率推移</h2>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={getWeekStats()}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" />
-                      <XAxis dataKey="date" stroke="#9ca3af" />
-                      <YAxis domain={[0, 100]} stroke="#9ca3af" />
-                      <Tooltip formatter={(value) => `${value}%`} contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #4b5563', borderRadius: '8px', color: '#fff' }} />
-                      <Line type="monotone" dataKey="percentage" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                <h2 className="text-lg font-bold text-white mb-4">習慣ごとの達成率（7日間）</h2>
-                <div className="space-y-3">
-                  {getHabitStats().map((stat, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-gray-700 p-4 rounded-lg">
-                      <span className="font-medium text-gray-100 w-1/3 truncate">{stat.name}</span>
-                      <div className="w-1/3 bg-gray-600 rounded-full h-2 mx-4">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${stat.achievement}%` }}></div>
-                      </div>
-                      <span className="font-bold text-blue-400 w-1/6 text-right">{stat.achievement}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
+            </div>
           )}
-        </div>
-      </div>
-    );
-  }
 
-  if (mode === 'goals') {
-    const filteredGoals = selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag);
-
-    return (
-      <div className="min-h-screen bg-gray-900 p-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <button onClick={() => setMode(null)} className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-300">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-3xl font-bold text-white">目標トラッカー</h1>
-          </div>
-
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setGoalView('record')}
-              className={`px-6 py-3 rounded-lg font-bold transition ${goalView === 'record' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-            >
-              記録
-            </button>
-            <button
-              onClick={() => setGoalView('dashboard')}
-              className={`px-6 py-3 rounded-lg font-bold transition flex items-center gap-2 ${goalView === 'dashboard' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              分析
-            </button>
-          </div>
-
-          {goalView === 'record' ? (
-            <>
-              <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700 flex items-center justify-between">
-                <button
-                  onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, -1))}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <ChevronLeft className="w-6 h-6 text-gray-300" />
-                </button>
-                <div className="text-center flex-1">
-                  <p className="text-xl font-bold text-white">{formatDate(selectedGoalDate)}</p>
+          {mode === 'habits' && (
+            <div style={{padding: '1rem'}}>
+              <div style={{maxWidth: '56rem', margin: '0 auto'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
+                  <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
+                  <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>習慣トラッカー</h1>
                 </div>
-                <button
-                  onClick={() => setShowGoalCalendar(!showGoalCalendar)}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <Calendar className="w-6 h-6 text-gray-300" />
-                </button>
-                <button
-                  onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, 1))}
-                  className="p-3 hover:bg-gray-700 rounded-lg transition bg-gray-700 flex items-center justify-center w-12 h-12"
-                >
-                  <ChevronRight className="w-6 h-6 text-gray-300" />
-                </button>
-              </div>
 
-              {showGoalCalendar && (
-                <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">日付を選択</h3>
-                  <div className="grid grid-cols-7 gap-2">
-                    {['日', '月', '火', '水', '木', '金', '土'].map(day => (
-                      <div key={day} className="text-center font-bold text-gray-400 text-sm p-2">
-                        {day}
+                <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                  <button
+                    onClick={() => setHabitView('record')}
+                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'record' ? '#2563eb' : '#374151', color: 'white'}}
+                  >
+                    記録
+                  </button>
+                  <button
+                    onClick={() => setHabitView('dashboard')}
+                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'dashboard' ? '#2563eb' : '#374151', color: 'white'}}
+                  >
+                    📊 分析
+                  </button>
+                </div>
+
+                {habitView === 'record' ? (
+                  <>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                      <button
+                        onClick={() => setSelectedDate(changeDate(selectedDate, -1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        ←
+                      </button>
+                      <div style={{textAlign: 'center', flex: 1}}>
+                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedDate)}</p>
                       </div>
-                    ))}
-                    {(() => {
-                      const date = new Date(selectedGoalDate + 'T12:00:00');
-                      const year = date.getFullYear();
-                      const month = date.getMonth();
-                      const firstDay = new Date(year, month, 1);
-                      const lastDay = new Date(year, month + 1, 0);
-                      const daysInMonth = lastDay.getDate();
-                      const startingDayOfWeek = firstDay.getDay();
+                      <button
+                        onClick={() => setShowHabitCalendar(!showHabitCalendar)}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        📅
+                      </button>
+                      <button
+                        onClick={() => setSelectedDate(changeDate(selectedDate, 1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        →
+                      </button>
+                    </div>
 
-                      const days = [];
-                      for (let i = 0; i < startingDayOfWeek; i++) {
-                        days.push(null);
-                      }
-                      for (let i = 1; i <= daysInMonth; i++) {
-                        days.push(i);
-                      }
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>{formatDate(selectedDate)}</h2>
+                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                        {habits.length === 0 ? (
+                          <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
+                        ) : (
+                          habits.map(habit => (
+                            <div key={habit.id} style={{background: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #4b5563'}}>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!habit.records[selectedDate]}
+                                  onChange={() => toggleHabit(habit.id)}
+                                  style={{width: '24px', height: '24px', cursor: 'pointer'}}
+                                />
+                                <span style={{fontWeight: '500', color: habit.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: habit.records[selectedDate] ? 'line-through' : 'none'}}>
+                                  {habit.name}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => deleteHabit(habit.id)}
+                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-                      return days.map((day, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            if (day) {
-                              const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                              setSelectedGoalDate(newDate);
-                              setShowGoalCalendar(false);
-                            }
-                          }}
-                          className={`h-10 rounded font-bold text-sm transition ${
-                            day && `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` === selectedGoalDate
-                              ? 'bg-orange-600 text-white'
-                              : day
-                              ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                              : 'bg-gray-900 cursor-default'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ));
-                    })()}
-                  </div>
-                </div>
-              )}
-
-              <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-                <button
-                  onClick={() => setSelectedGoalTag('all')}
-                  className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition border ${selectedGoalTag === 'all' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-800 text-gray-300 border-gray-700'}`}
-                >
-                  全て
-                </button>
-                {tags.map(tag => {
-                  const color = tagColors[tag];
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => setSelectedGoalTag(tag)}
-                      className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition border ${selectedGoalTag === tag ? `${color.bg} text-white ${color.border}` : 'bg-gray-800 text-gray-300 border-gray-700'}`}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="space-y-4 mb-6">
-                {filteredGoals.length === 0 ? (
-                  <div className="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-                    <p className="text-gray-400">このカテゴリに目標がありません</p>
-                  </div>
+                    {!showHabitForm ? (
+                      <button
+                        onClick={() => setShowHabitForm(true)}
+                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
+                      >
+                        ➕ 習慣を追加
+                      </button>
+                    ) : (
+                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>新しい習慣を追加</h2>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                          <input
+                            type="text"
+                            placeholder="習慣の名前"
+                            value={newHabitName}
+                            onChange={(e) => setNewHabitName(e.target.value)}
+                          />
+                          <div style={{display: 'flex', gap: '0.5rem'}}>
+                            <button
+                              onClick={addHabit}
+                              style={{flex: 1, background: '#2563eb', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              追加
+                            </button>
+                            <button
+                              onClick={() => setShowHabitForm(false)}
+                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  filteredGoals.map(goal => {
-                    const color = tagColors[goal.tag];
-                    return (
-                      <div key={goal.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-xl font-bold text-white">{goal.name}</h3>
-                            <div className={`${color.bg} ${color.text} px-3 py-1 rounded-full text-sm font-bold`}>
-                              {goal.tag}
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#60a5fa'}}>
+                        {habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%
+                      </p>
+                    </div>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>登録習慣数</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#fb923c'}}>{habits.length}</p>
+                    </div>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本週完了数</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#4ade80'}}>{getWeekStats().reduce((a, b) => a + (b.percentage > 0 ? 1 : 0), 0)}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {mode === 'goals' && (
+            <div style={{padding: '1rem'}}>
+              <div style={{maxWidth: '64rem', margin: '0 auto'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
+                  <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
+                  <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>目標トラッカー</h1>
+                </div>
+
+                <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                  <button
+                    onClick={() => setGoalView('record')}
+                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'record' ? '#ea580c' : '#374151', color: 'white'}}
+                  >
+                    記録
+                  </button>
+                  <button
+                    onClick={() => setGoalView('dashboard')}
+                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'dashboard' ? '#ea580c' : '#374151', color: 'white'}}
+                  >
+                    📊 分析
+                  </button>
+                </div>
+
+                {goalView === 'record' ? (
+                  <>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                      <button
+                        onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, -1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        ←
+                      </button>
+                      <div style={{textAlign: 'center', flex: 1}}>
+                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedGoalDate)}</p>
+                      </div>
+                      <button
+                        onClick={() => setShowGoalCalendar(!showGoalCalendar)}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        📅
+                      </button>
+                      <button
+                        onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, 1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        →
+                      </button>
+                    </div>
+
+                    <div className="mb-6" style={{display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>
+                      <button
+                        onClick={() => setSelectedGoalTag('all')}
+                        style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', fontWeight: '500', whiteSpace: 'nowrap', background: selectedGoalTag === 'all' ? '#374151' : '#1f2937', color: 'white', border: '1px solid ' + (selectedGoalTag === 'all' ? '#4b5563' : '#374151')}}
+                      >
+                        全て
+                      </button>
+                      {tags.map(tag => (
+                        <button
+                          key={tag}
+                          onClick={() => setSelectedGoalTag(tag)}
+                          style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', fontWeight: '500', whiteSpace: 'nowrap', background: selectedGoalTag === tag ? '#ea580c' : '#1f2937', color: 'white', border: '1px solid ' + (selectedGoalTag === tag ? '#f97316' : '#374151')}}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem'}}>
+                      {(selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).length === 0 ? (
+                        <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '2rem', textAlign: 'center', border: '1px solid #374151'}}>
+                          <p style={{color: '#9ca3af'}}>このカテゴリに目標がありません</p>
+                        </div>
+                      ) : (
+                        (selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).map(goal => (
+                          <div key={goal.id} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem'}}>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{goal.name}</h3>
+                                <div style={{background: '#ea580c', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold'}}>
+                                  {goal.tag}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => deleteGoal(goal.id)}
+                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
+                              >
+                                ✕
+                              </button>
+                            </div>
+
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem'}}>
+                              <button
+                                onClick={() => recordGoal(goal.id, 'min')}
+                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'min' ? '#ea580c' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'min' ? '#f97316' : '#4b5563')}}
+                              >
+                                MIN<br /><span style={{fontSize: '0.75rem'}}>{goal.min}</span>
+                              </button>
+                              <button
+                                onClick={() => recordGoal(goal.id, 'more')}
+                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'more' ? '#2563eb' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'more' ? '#3b82f6' : '#4b5563')}}
+                              >
+                                MORE<br /><span style={{fontSize: '0.75rem'}}>{goal.more}</span>
+                              </button>
+                              <button
+                                onClick={() => recordGoal(goal.id, 'max')}
+                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'max' ? '#16a34a' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'max' ? '#22c55e' : '#4b5563')}}
+                              >
+                                MAX<br /><span style={{fontSize: '0.75rem'}}>{goal.max}</span>
+                              </button>
                             </div>
                           </div>
-                          <button
-                            onClick={() => deleteGoal(goal.id)}
-                            className="p-2 hover:bg-red-900 rounded transition"
-                          >
-                            <X className="w-5 h-5 text-red-500" />
-                          </button>
-                        </div>
+                        ))
+                      )}
+                    </div>
 
-                        <div className="grid grid-cols-3 gap-3">
-                          <button
-                            onClick={() => recordGoal(goal.id, 'min')}
-                            className={`py-3 px-4 rounded-lg font-bold transition border ${goal.records[selectedGoalDate] === 'min' ? 'bg-orange-600 text-white border-orange-500' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-gray-600'}`}
-                          >
-                            MIN<br /><span className="text-xs">{goal.min}</span>
-                          </button>
-                          <button
-                            onClick={() => recordGoal(goal.id, 'more')}
-                            className={`py-3 px-4 rounded-lg font-bold transition border ${goal.records[selectedGoalDate] === 'more' ? 'bg-blue-600 text-white border-blue-500' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-gray-600'}`}
-                          >
-                            MORE<br /><span className="text-xs">{goal.more}</span>
-                          </button>
-                          <button
-                            onClick={() => recordGoal(goal.id, 'max')}
-                            className={`py-3 px-4 rounded-lg font-bold transition border ${goal.records[selectedGoalDate] === 'max' ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-gray-600'}`}
-                          >
-                            MAX<br /><span className="text-xs">{goal.max}</span>
-                          </button>
+                    {!showGoalForm ? (
+                      <button
+                        onClick={() => setShowGoalForm(true)}
+                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
+                      >
+                        ➕ 目標を追加
+                      </button>
+                    ) : (
+                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>
+                          新しい目標を追加{selectedGoalTag !== 'all' && `・${selectedGoalTag}`}
+                        </h2>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                          <input
+                            type="text"
+                            placeholder="目標名"
+                            value={newGoalName}
+                            onChange={(e) => setNewGoalName(e.target.value)}
+                          />
+                          {selectedGoalTag === 'all' && (
+                            <select
+                              value={newGoalTag}
+                              onChange={(e) => setNewGoalTag(e.target.value)}
+                            >
+                              <option value="">カテゴリを選択</option>
+                              {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+                            </select>
+                          )}
+                          <input
+                            type="text"
+                            placeholder="MIN"
+                            value={newGoalMin}
+                            onChange={(e) => setNewGoalMin(e.target.value)}
+                          />
+                          <input
+                            type="text"
+                            placeholder="MORE"
+                            value={newGoalMore}
+                            onChange={(e) => setNewGoalMore(e.target.value)}
+                          />
+                          <input
+                            type="text"
+                            placeholder="MAX"
+                            value={newGoalMax}
+                            onChange={(e) => setNewGoalMax(e.target.value)}
+                          />
+                          <div style={{display: 'flex', gap: '0.5rem'}}>
+                            <button
+                              onClick={addGoal}
+                              style={{flex: 1, background: '#ea580c', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              追加
+                            </button>
+                            <button
+                              onClick={() => setShowGoalForm(false)}
+                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              キャンセル
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-              </div>
-
-              {!showGoalForm ? (
-                <button
-                  onClick={() => setShowGoalForm(true)}
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition border border-gray-600"
-                >
-                  <Plus className="w-5 h-5" />
-                  目標を追加
-                </button>
-              ) : (
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h2 className="text-lg font-bold text-white mb-4">
-                    新しい目標を追加{selectedGoalTag !== 'all' && `・${selectedGoalTag}`}
-                  </h2>
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="目標名"
-                      value={newGoalName}
-                      onChange={(e) => setNewGoalName(e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500"
-                    />
-                    {selectedGoalTag === 'all' && (
-                      <select
-                        value={newGoalTag}
-                        onChange={(e) => setNewGoalTag(e.target.value)}
-                        className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      >
-                        <option value="">カテゴリを選択</option>
-                        {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
-                      </select>
                     )}
-                    <input
-                      type="text"
-                      placeholder="MIN"
-                      value={newGoalMin}
-                      onChange={(e) => setNewGoalMin(e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="MORE"
-                      value={newGoalMore}
-                      onChange={(e) => setNewGoalMore(e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="MAX"
-                      value={newGoalMax}
-                      onChange={(e) => setNewGoalMax(e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={addGoal}
-                        className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 rounded transition"
-                      >
-                        追加
-                      </button>
-                      <button
-                        onClick={() => setShowGoalForm(false)}
-                        className="flex-1 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 rounded transition"
-                      >
-                        キャンセル
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="mb-6 flex gap-2 border-b border-gray-700 pb-4 overflow-x-auto">
-                <button
-                  onClick={() => setSelectedGoalTag('all')}
-                  className={`px-4 py-2 font-medium whitespace-nowrap transition border-b-2 ${selectedGoalTag === 'all' ? 'border-gray-400 text-white' : 'border-transparent text-gray-400'}`}
-                >
-                  全て
-                </button>
-                {tags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => setSelectedGoalTag(tag)}
-                    className={`px-4 py-2 font-medium whitespace-nowrap transition border-b-2 ${selectedGoalTag === tag ? 'border-gray-400 text-white' : 'border-transparent text-gray-400'}`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mb-6 flex gap-2">
-                <button
-                  onClick={() => setGoalStatsPeriod('week')}
-                  className={`px-6 py-2 rounded-lg font-bold transition ${goalStatsPeriod === 'week' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                >
-                  過去7日間
-                </button>
-                <button
-                  onClick={() => setGoalStatsPeriod('month')}
-                  className={`px-6 py-2 rounded-lg font-bold transition ${goalStatsPeriod === 'month' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                >
-                  過去30日間
-                </button>
-                <button
-                  onClick={() => setGoalStatsPeriod('all')}
-                  className={`px-6 py-2 rounded-lg font-bold transition ${goalStatsPeriod === 'all' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                >
-                  全期間
-                </button>
-              </div>
-
-              {getGoalStats(selectedGoalTag).length > 0 && (
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
-                  <h2 className="text-lg font-bold text-white mb-4">
-                    総合成果（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}）
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="flex justify-center">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={(() => {
-                              const stats = getOverallStats(selectedGoalTag);
-                              const total = stats.totalMax + stats.totalMore + stats.totalMin + (stats.totalDays - stats.totalMax - stats.totalMore - stats.totalMin);
-                              return [
-                                { name: 'MAX', value: stats.totalMax, color: levelColors.max },
-                                { name: 'MORE', value: stats.totalMore, color: levelColors.more },
-                                { name: 'MIN', value: stats.totalMin, color: levelColors.min },
-                                { name: '未達成', value: Math.max(0, total - stats.totalMax - stats.totalMore - stats.totalMin), color: levelColors.none }
-                              ];
-                            })()}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ name, value }) => `${name} ${value}`}
-                            outerRadius={100}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {(() => {
-                              const stats = getOverallStats(selectedGoalTag);
-                              const total = stats.totalMax + stats.totalMore + stats.totalMin + (stats.totalDays - stats.totalMax - stats.totalMore - stats.totalMin);
-                              const data = [
-                                { name: 'MAX', value: stats.totalMax, color: levelColors.max },
-                                { name: 'MORE', value: stats.totalMore, color: levelColors.more },
-                                { name: 'MIN', value: stats.totalMin, color: levelColors.min },
-                                { name: '未達成', value: Math.max(0, total - stats.totalMax - stats.totalMore - stats.totalMin), color: levelColors.none }
-                              ];
-                              return data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ));
-                            })()}
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    <div className="flex flex-col justify-center space-y-4">
-                      <div className="bg-gray-700 p-4 rounded-lg">
-                        <p className="text-gray-400 text-sm">MAX達成</p>
-                        <p className="text-2xl font-bold text-green-400">{getOverallStats(selectedGoalTag).totalMax}回</p>
-                      </div>
-                      <div className="bg-gray-700 p-4 rounded-lg">
-                        <p className="text-gray-400 text-sm">MORE達成</p>
-                        <p className="text-2xl font-bold text-blue-400">{getOverallStats(selectedGoalTag).totalMore}回</p>
-                      </div>
-                      <div className="bg-gray-700 p-4 rounded-lg">
-                        <p className="text-gray-400 text-sm">MIN達成</p>
-                        <p className="text-2xl font-bold text-orange-400">{getOverallStats(selectedGoalTag).totalMin}回</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-4">
-                {(goalStatsPeriod === 'week' ? getWeekGoalStats(selectedGoalTag) : getGoalStats(selectedGoalTag)).length === 0 ? (
-                  <div className="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-                    <p className="text-gray-400">このカテゴリに目標がありません</p>
-                  </div>
+                  </>
                 ) : (
-                  (goalStatsPeriod === 'week' ? getWeekGoalStats(selectedGoalTag) : getGoalStats(selectedGoalTag)).map((stat, idx) => (
-                    <div key={idx} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-white">{stat.name}</h3>
-                        <span className="text-2xl font-bold text-orange-400">{stat.achievement}%</span>
-                      </div>
-                      
-                      <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                          <Pie
-                            data={stat.data}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ name, value }) => `${name}: ${value}`}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {stat.data.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  ))
+                  <div style={{textAlign: 'center', color: '#9ca3af', padding: '2rem'}}>
+                    <p>Vercel版では分析機能は簡略版です</p>
+                  </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
-      </div>
-    );
-  }
-}
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<HabitTracker />);
+  </script>
+</body>
+</html>
