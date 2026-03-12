@@ -392,7 +392,99 @@
                       <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
                         {habits.length === 0 ? (
                           <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
+                        {habitView === 'record' ? (
+                  <>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                      <button
+                        onClick={() => setSelectedDate(changeDate(selectedDate, -1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        ←
+                      </button>
+                      <div style={{textAlign: 'center', flex: 1}}>
+                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedDate)}</p>
+                      </div>
+                      <button
+                        onClick={() => setShowHabitCalendar(!showHabitCalendar)}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        📅
+                      </button>
+                      <button
+                        onClick={() => setSelectedDate(changeDate(selectedDate, 1))}
+                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                      >
+                        →
+                      </button>
+                    </div>
+
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>{formatDate(selectedDate)}</h2>
+                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                        {habits.length === 0 ? (
+                          <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
                         ) : (
+                          habits.map(habit => (
+                            <div key={habit.id} style={{background: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #4b5563'}}>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!habit.records[selectedDate]}
+                                  onChange={() => toggleHabit(habit.id)}
+                                  style={{width: '24px', height: '24px', cursor: 'pointer'}}
+                                />
+                                <span style={{fontWeight: '500', color: habit.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: habit.records[selectedDate] ? 'line-through' : 'none'}}>
+                                  {habit.name}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => deleteHabit(habit.id)}
+                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {!showHabitForm ? (
+                      <button
+                        onClick={() => setShowHabitForm(true)}
+                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
+                      >
+                        ➕ 習慣を追加
+                      </button>
+                    ) : (
+                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>新しい習慣を追加</h2>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                          <input
+                            type="text"
+                            placeholder="習慣の名前"
+                            value={newHabitName}
+                            onChange={(e) => setNewHabitName(e.target.value)}
+                          />
+                          <div style={{display: 'flex', gap: '0.5rem'}}>
+                            <button
+                              onClick={addHabit}
+                              style={{flex: 1, background: '#2563eb', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              追加
+                            </button>
+                            <button
+                              onClick={() => setShowHabitForm(false)}
+                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
                     <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
                       <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
@@ -766,37 +858,64 @@
                           <p style={{color: '#9ca3af'}}>このカテゴリに目標がありません</p>
                         </div>
                       ) : (
-                        getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).map((stat, idx) => (
-                          <div key={idx} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
-                              <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{stat.name}</h3>
-                              <span style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>{stat.achievement}%</span>
+                        getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).map((stat, idx) => {
+                          const totalDays = goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1);
+                          const maxDeg = (stat.maxCount / totalDays) * 360;
+                          const moreDeg = (stat.moreCount / totalDays) * 360;
+                          const minDeg = (stat.minCount / totalDays) * 360;
+                          
+                          let conic = `#4ade80 0deg ${maxDeg}deg, #60a5fa ${maxDeg}deg ${maxDeg + moreDeg}deg, #fb923c ${maxDeg + moreDeg}deg ${maxDeg + moreDeg + minDeg}deg, #4b5563 ${maxDeg + moreDeg + minDeg}deg 360deg`;
+                          
+                          return (
+                            <div key={idx} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                                <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{stat.name}</h3>
+                                <span style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>{stat.achievement}%</span>
+                              </div>
+                              
+                              <div style={{
+                                width: '150px',
+                                height: '150px',
+                                borderRadius: '50%',
+                                background: `conic-gradient(${conic})`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '1rem auto'
+                              }}>
+                                <div style={{
+                                  width: '120px',
+                                  height: '120px',
+                                  borderRadius: '50%',
+                                  backgroundColor: '#1f2937',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: 'white',
+                                  fontWeight: 'bold',
+                                  fontSize: '1.25rem'
+                                }}>
+                                  {stat.achievement}%
+                                </div>
+                              </div>
+                              
+                              <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem'}}>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#4ade80'}}></div>
+                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MAX達成: {stat.maxCount}日</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#60a5fa'}}></div>
+                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MORE達成: {stat.moreCount}日</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#fb923c'}}></div>
+                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MIN達成: {stat.minCount}日</span>
+                                </div>
+                              </div>
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MAX達成</span>
-                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
-                                  <div style={{background: '#4ade80', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.maxCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
-                                </div>
-                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#4ade80', width: '40px', textAlign: 'right'}}>{stat.maxCount}</span>
-                              </div>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MORE達成</span>
-                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
-                                  <div style={{background: '#60a5fa', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.moreCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
-                                </div>
-                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#60a5fa', width: '40px', textAlign: 'right'}}>{stat.moreCount}</span>
-                              </div>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MIN達成</span>
-                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
-                                  <div style={{background: '#fb923c', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.minCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
-                                </div>
-                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#fb923c', width: '40px', textAlign: 'right'}}>{stat.minCount}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </>
