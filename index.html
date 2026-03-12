@@ -7,140 +7,27 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.0/recharts.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      background-color: #111827;
-      color: #fff;
-    }
-    
-    #root {
-      width: 100%;
-      min-height: 100vh;
-    }
-    
-    .min-h-screen { min-height: 100vh; }
-    .bg-black { background-color: #000; }
-    .bg-gray-900 { background-color: #111827; }
-    .bg-gray-800 { background-color: #1f2937; }
-    .bg-gray-700 { background-color: #374151; }
-    .text-white { color: #fff; }
-    .text-gray-300 { color: #d1d5db; }
-    .text-gray-400 { color: #9ca3af; }
-    .p-4 { padding: 1rem; }
-    .p-6 { padding: 1.5rem; }
-    .px-4 { padding-left: 1rem; padding-right: 1rem; }
-    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-    .mb-2 { margin-bottom: 0.5rem; }
-    .mb-4 { margin-bottom: 1rem; }
-    .mb-6 { margin-bottom: 1.5rem; }
-    .flex { display: flex; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-4 { gap: 1rem; }
-    .items-center { align-items: center; }
-    .justify-center { justify-content: center; }
-    .justify-between { justify-content: space-between; }
-    .flex-1 { flex: 1; }
-    .rounded { border-radius: 0.25rem; }
-    .rounded-lg { border-radius: 0.5rem; }
-    .rounded-xl { border-radius: 0.75rem; }
-    .rounded-2xl { border-radius: 1rem; }
-    .border { border: 1px solid; }
-    .border-gray-700 { border-color: #374151; }
-    .border-gray-600 { border-color: #4b5563; }
-    .border-blue-500 { border-color: #3b82f6; }
-    .border-orange-500 { border-color: #f97316; }
-    .border-green-500 { border-color: #22c55e; }
-    .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-    .w-full { width: 100%; }
-    .max-w-md { max-width: 28rem; }
-    .max-w-4xl { max-width: 56rem; }
-    .max-w-5xl { max-width: 64rem; }
-    .mx-auto { margin: 0 auto; }
-    .space-y-3 > * + * { margin-top: 0.75rem; }
-    .space-y-4 > * + * { margin-top: 1rem; }
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      font-weight: bold;
-      transition: all 0.2s;
-    }
-    input, select {
-      font-family: inherit;
-      color: white;
-      background-color: #374151;
-      border: 1px solid #4b5563;
-      padding: 0.5rem 1rem;
-      border-radius: 0.25rem;
-    }
-    input:focus, select:focus {
-      outline: none;
-      ring: 2px;
-      ring-color: #3b82f6;
-    }
-    .bg-blue-600 { background-color: #2563eb; }
-    .bg-blue-700 { background-color: #1d4ed8; }
-    .bg-orange-600 { background-color: #ea580c; }
-    .bg-orange-700 { background-color: #c2410c; }
-    .bg-green-600 { background-color: #16a34a; }
-    .text-blue-400 { color: #60a5fa; }
-    .text-orange-400 { color: #fb923c; }
-    .text-green-400 { color: #4ade80; }
-    .overflow-x-auto { overflow-x: auto; }
-    .pb-2 { padding-bottom: 0.5rem; }
-    .absolute { position: absolute; }
-    .relative { position: relative; }
-    .z-10 { z-index: 10; }
-    .mix-blend-multiply { mix-blend-mode: multiply; }
-    .filter { filter: brightness(1); }
-    .blur-3xl { filter: blur(64px); }
-    .opacity-10 { opacity: 0.1; }
-    .tracking-tighter { letter-spacing: -0.05em; }
-    .text-2xl { font-size: 1.5rem; }
-    .text-3xl { font-size: 1.875rem; }
-    .text-6xl { font-size: 3.75rem; }
-    .font-black { font-weight: 900; }
-    .text-center { text-align: center; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto'; background-color: #111827; color: #fff; }
+    #root { width: 100%; min-height: 100vh; }
+    button { font-family: inherit; cursor: pointer; border: none; font-weight: bold; transition: all 0.2s; }
+    input, select { font-family: inherit; color: white; background-color: #374151; border: 1px solid #4b5563; padding: 0.5rem 1rem; border-radius: 0.25rem; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState } = React;
     
     function HabitTracker() {
       const [mode, setMode] = useState(null);
       const [habits, setHabits] = useState(() => {
-        try {
-          const saved = localStorage.getItem('habits');
-          return saved ? JSON.parse(saved) : [];
-        } catch {
-          return [];
-        }
+        try { const saved = localStorage.getItem('habits'); return saved ? JSON.parse(saved) : []; } catch { return []; }
       });
       const [goals, setGoals] = useState(() => {
-        try {
-          const saved = localStorage.getItem('goals');
-          return saved ? JSON.parse(saved) : [];
-        } catch {
-          return [];
-        }
+        try { const saved = localStorage.getItem('goals'); return saved ? JSON.parse(saved) : []; } catch { return []; }
       });
       const [habitView, setHabitView] = useState('record');
       const [goalView, setGoalView] = useState('record');
@@ -149,8 +36,6 @@
       const [selectedGoalDate, setSelectedGoalDate] = useState(new Date().toISOString().split('T')[0]);
       const [showHabitForm, setShowHabitForm] = useState(false);
       const [showGoalForm, setShowGoalForm] = useState(false);
-      const [showHabitCalendar, setShowHabitCalendar] = useState(false);
-      const [showGoalCalendar, setShowGoalCalendar] = useState(false);
       const [newHabitName, setNewHabitName] = useState('');
       const [newGoalName, setNewGoalName] = useState('');
       const [newGoalTag, setNewGoalTag] = useState('');
@@ -185,9 +70,7 @@
 
       const toggleHabit = (habitId) => {
         const updated = habits.map(h => 
-          h.id === habitId 
-            ? { ...h, records: { ...h.records, [selectedDate]: !h.records[selectedDate] } }
-            : h
+          h.id === habitId ? { ...h, records: { ...h.records, [selectedDate]: !h.records[selectedDate] } } : h
         );
         setHabits(updated);
         localStorage.setItem('habits', JSON.stringify(updated));
@@ -222,9 +105,7 @@
 
       const recordGoal = (goalId, level) => {
         const updated = goals.map(g =>
-          g.id === goalId
-            ? { ...g, records: { ...g.records, [selectedGoalDate]: level } }
-            : g
+          g.id === goalId ? { ...g, records: { ...g.records, [selectedGoalDate]: level } } : g
         );
         setGoals(updated);
         localStorage.setItem('goals', JSON.stringify(updated));
@@ -236,20 +117,6 @@
         localStorage.setItem('goals', JSON.stringify(updated));
       };
 
-      const getWeekStats = () => {
-        const weekData = [];
-        for (let i = 6; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split('T')[0];
-          const completedCount = habits.filter(h => h.records[dateStr]).length;
-          const total = habits.length;
-          const percentage = total === 0 ? 0 : Math.round((completedCount / total) * 100);
-          weekData.push({ date: dateStr.slice(5), percentage });
-        }
-        return weekData;
-      };
-
       const getHabitStats = () => {
         return habits.map(habit => {
           let completed = 0;
@@ -259,30 +126,24 @@
             const dateStr = date.toISOString().split('T')[0];
             if (habit.records[dateStr]) completed++;
           }
-          return {
-            name: habit.name,
-            achievement: Math.round((completed / 7) * 100),
-            completed
-          };
+          return { name: habit.name, achievement: Math.round((completed / 7) * 100) };
         });
       };
 
       const getGoalStatsForPeriod = () => {
-        const days = goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : 30;
+        const days = goalStatsPeriod === 'week' ? 7 : 30;
         return goals.map(goal => {
-          let minCount = 0, moreCount = 0, maxCount = 0, totalRecordedDays = 0;
+          let minCount = 0, moreCount = 0, maxCount = 0;
           for (let i = days - 1; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split('T')[0];
             const level = goal.records[dateStr];
-            if (level === 'min') { minCount++; totalRecordedDays++; }
-            if (level === 'more') { moreCount++; totalRecordedDays++; }
-            if (level === 'max') { maxCount++; totalRecordedDays++; }
+            if (level === 'min') minCount++;
+            if (level === 'more') moreCount++;
+            if (level === 'max') maxCount++;
           }
           const totalAchieved = minCount + moreCount + maxCount;
-          const displayDays = goalStatsPeriod === 'month' ? days : (totalRecordedDays > 0 ? totalRecordedDays : 1);
-          
           return {
             name: goal.name,
             tag: goal.tag,
@@ -290,641 +151,268 @@
             moreCount,
             maxCount,
             totalAchieved,
-            totalDays: displayDays,
-            achievement: Math.round((totalAchieved / displayDays) * 100)
+            achievement: Math.round((totalAchieved / days) * 100)
           };
         });
       };
 
-      return (
-        <div className="min-h-screen bg-gray-900">
-          {!mode && (
-            <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-              <div style={{position: 'absolute', top: 0, right: 0, width: '320px', height: '320px', background: '#2563eb', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
-              <div style={{position: 'absolute', bottom: 0, left: 0, width: '320px', height: '320px', background: '#ea580c', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
+      if (!mode) {
+        return (
+          <div style={{minHeight: '100vh', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', position: 'relative', overflow: 'hidden'}}>
+            <div style={{position: 'absolute', top: 0, right: 0, width: '320px', height: '320px', background: '#2563eb', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
+            <div style={{position: 'absolute', bottom: 0, left: 0, width: '320px', height: '320px', background: '#ea580c', borderRadius: '50%', mixBlendMode: 'multiply', filter: 'blur(64px)', opacity: 0.1}}></div>
+            
+            <div style={{position: 'relative', zIndex: 10, backgroundColor: '#111827', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '3rem', maxWidth: '28rem', width: '100%', border: '1px solid #1f2937'}}>
+              <div style={{textAlign: 'center', marginBottom: '3rem'}}>
+                <h1 style={{fontSize: 'clamp(2rem, 8vw, 3.75rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.05em', background: 'linear-gradient(to right, #60a5fa, #fb923c, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'}}>
+                  PROGRESS
+                </h1>
+                <p style={{color: '#9ca3af', fontSize: '1.125rem'}}>毎日の成長を追跡する</p>
+              </div>
               
-              <div style={{position: 'relative', zIndex: 10, background: '#111827', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '3rem', maxWidth: '28rem', width: '100%', border: '1px solid #1f2937'}}>
-                <div style={{textAlign: 'center', marginBottom: '3rem'}}>
-                  <h1 style={{fontSize: 'clamp(2rem, 8vw, 3.75rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.05em', background: 'linear-gradient(to right, #60a5fa, #fb923c, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', wordWrap: 'break-word'}}>
-                    PROGRESS
-                  </h1>
-                  <p style={{color: '#9ca3af', fontSize: '1.125rem'}}>毎日の成長を追跡する</p>
-                </div>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                <button
+                  onClick={() => { setMode('habits'); setHabitView('record'); }}
+                  style={{background: 'linear-gradient(to right, #2563eb, #1d4ed8)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #3b82f6', fontWeight: 'bold'}}
+                >
+                  📋 習慣トラッカー
+                  <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>日々の習慣を記録</p>
+                </button>
                 
-                <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                  <button
-                    onClick={() => { setMode('habits'); setHabitView('record'); setSelectedDate(today); }}
-                    style={{background: 'linear-gradient(to right, #2563eb, #1d4ed8)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #3b82f6', fontWeight: 'bold', transform: 'scale(1)', transition: 'all 0.2s'}}
-                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                  >
-                    <span style={{fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem'}}>📋</span>
-                    習慣トラッカー
-                    <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>日々の習慣を記録</p>
-                  </button>
-                  
-                  <button
-                    onClick={() => { setMode('goals'); setGoalView('record'); setSelectedGoalTag('all'); setSelectedGoalDate(today); }}
-                    style={{background: 'linear-gradient(to right, #ea580c, #c2410c)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #f97316', fontWeight: 'bold', transform: 'scale(1)', transition: 'all 0.2s'}}
-                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                  >
-                    <span style={{fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem'}}>🎯</span>
-                    目標トラッカー
-                    <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>レベル別目標を追跡</p>
-                  </button>
-                </div>
+                <button
+                  onClick={() => { setMode('goals'); setGoalView('record'); }}
+                  style={{background: 'linear-gradient(to right, #ea580c, #c2410c)', color: 'white', padding: '1rem 1.5rem', borderRadius: '0.75rem', border: '1px solid #f97316', fontWeight: 'bold'}}
+                >
+                  🎯 目標トラッカー
+                  <p style={{fontSize: '0.875rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9}}>レベル別目標を追跡</p>
+                </button>
               </div>
             </div>
-          )}
+          </div>
+        );
+      }
 
-          {mode === 'habits' && (
-            <div style={{padding: '1rem'}}>
-              <div style={{maxWidth: '56rem', margin: '0 auto'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
-                  <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
-                  <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>習慣トラッカー</h1>
-                </div>
+      if (mode === 'habits') {
+        return (
+          <div style={{minHeight: '100vh', backgroundColor: '#111827', padding: '1rem'}}>
+            <div style={{maxWidth: '56rem', margin: '0 auto'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
+                <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
+                <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>習慣トラッカー</h1>
+              </div>
 
-                <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
-                  <button
-                    onClick={() => setHabitView('record')}
-                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'record' ? '#2563eb' : '#374151', color: 'white'}}
-                  >
-                    記録
-                  </button>
-                  <button
-                    onClick={() => setHabitView('dashboard')}
-                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'dashboard' ? '#2563eb' : '#374151', color: 'white'}}
-                  >
-                    📊 分析
-                  </button>
-                </div>
+              <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                <button onClick={() => setHabitView('record')} style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'record' ? '#2563eb' : '#374151', color: 'white'}}>記録</button>
+                <button onClick={() => setHabitView('dashboard')} style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: habitView === 'dashboard' ? '#2563eb' : '#374151', color: 'white'}}>📊 分析</button>
+              </div>
 
-                {habitView === 'record' ? (
-                  <>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <button
-                        onClick={() => setSelectedDate(changeDate(selectedDate, -1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        ←
-                      </button>
-                      <div style={{textAlign: 'center', flex: 1}}>
-                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedDate)}</p>
-                      </div>
-                      <button
-                        onClick={() => setShowHabitCalendar(!showHabitCalendar)}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        📅
-                      </button>
-                      <button
-                        onClick={() => setSelectedDate(changeDate(selectedDate, 1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        →
-                      </button>
-                    </div>
-
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
-                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>{formatDate(selectedDate)}</h2>
-                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                        {habits.length === 0 ? (
-                          <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
-                        {habitView === 'record' ? (
-                  <>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <button
-                        onClick={() => setSelectedDate(changeDate(selectedDate, -1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        ←
-                      </button>
-                      <div style={{textAlign: 'center', flex: 1}}>
-                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedDate)}</p>
-                      </div>
-                      <button
-                        onClick={() => setShowHabitCalendar(!showHabitCalendar)}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        📅
-                      </button>
-                      <button
-                        onClick={() => setSelectedDate(changeDate(selectedDate, 1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        →
-                      </button>
-                    </div>
-
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
-                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>{formatDate(selectedDate)}</h2>
-                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                        {habits.length === 0 ? (
-                          <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
-                        ) : (
-                          habits.map(habit => (
-                            <div key={habit.id} style={{background: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #4b5563'}}>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
-                                <input
-                                  type="checkbox"
-                                  checked={!!habit.records[selectedDate]}
-                                  onChange={() => toggleHabit(habit.id)}
-                                  style={{width: '24px', height: '24px', cursor: 'pointer'}}
-                                />
-                                <span style={{fontWeight: '500', color: habit.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: habit.records[selectedDate] ? 'line-through' : 'none'}}>
-                                  {habit.name}
-                                </span>
-                              </div>
-                              <button
-                                onClick={() => deleteHabit(habit.id)}
-                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-
-                    {!showHabitForm ? (
-                      <button
-                        onClick={() => setShowHabitForm(true)}
-                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
-                      >
-                        ➕ 習慣を追加
-                      </button>
-                    ) : (
-                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>新しい習慣を追加</h2>
-                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                          <input
-                            type="text"
-                            placeholder="習慣の名前"
-                            value={newHabitName}
-                            onChange={(e) => setNewHabitName(e.target.value)}
-                          />
-                          <div style={{display: 'flex', gap: '0.5rem'}}>
-                            <button
-                              onClick={addHabit}
-                              style={{flex: 1, background: '#2563eb', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              追加
-                            </button>
-                            <button
-                              onClick={() => setShowHabitForm(false)}
-                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              キャンセル
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
-                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
-                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#60a5fa'}}>
-                        {habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%
-                      </p>
-                    </div>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
-                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>登録習慣数</p>
-                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#fb923c'}}>{habits.length}</p>
-                    </div>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
-                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本週完了数</p>
-                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#4ade80'}}>{getWeekStats().reduce((a, b) => a + (b.percentage > 0 ? 1 : 0), 0)}</p>
-                    </div>
+              {habitView === 'record' ? (
+                <>
+                  <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <button onClick={() => setSelectedDate(changeDate(selectedDate, -1))} style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px'}}>←</button>
+                    <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white', flex: 1, textAlign: 'center'}}>{formatDate(selectedDate)}</p>
+                    <button onClick={() => setSelectedDate(changeDate(selectedDate, 1))} style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px'}}>→</button>
                   </div>
-                )}
 
-                {habitView === 'dashboard' && habits.length > 0 && (
-                  <>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
-                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>習慣ごとの達成率（7日間）</h2>
+                  <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
+                    <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>{formatDate(selectedDate)}</h2>
+                    {habits.length === 0 ? (
+                      <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
+                    ) : (
                       <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                        {getHabitStats().map((stat, idx) => (
-                          <div key={idx} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
-                            <span style={{fontWeight: '500', color: '#f3f4f6', width: '33%', overflow: 'hidden', textOverflow: 'ellipsis'}}>{stat.name}</span>
-                            <div style={{width: '33%', backgroundColor: '#4b5563', borderRadius: '9999px', height: '8px', margin: '0 1rem'}}>
-                              <div style={{backgroundColor: '#3b82f6', height: '8px', borderRadius: '9999px', width: `${stat.achievement}%`}}></div>
+                        {habits.map(habit => (
+                          <div key={habit.id} style={{backgroundColor: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
+                              <input type="checkbox" checked={!!habit.records[selectedDate]} onChange={() => toggleHabit(habit.id)} style={{width: '24px', height: '24px'}} />
+                              <span style={{color: habit.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: habit.records[selectedDate] ? 'line-through' : 'none'}}>{habit.name}</span>
                             </div>
-                            <span style={{fontWeight: 'bold', color: '#60a5fa', width: '16.66%', textAlign: 'right'}}>{stat.achievement}%</span>
+                            <button onClick={() => deleteHabit(habit.id)} style={{background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}>✕</button>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  </>
-                )} : (
-                          habits.map(habit => (
-                            <div key={habit.id} style={{background: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #4b5563'}}>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
-                                <input
-                                  type="checkbox"
-                                  checked={!!habit.records[selectedDate]}
-                                  onChange={() => toggleHabit(habit.id)}
-                                  style={{width: '24px', height: '24px', cursor: 'pointer'}}
-                                />
-                                <span style={{fontWeight: '500', color: habit.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: habit.records[selectedDate] ? 'line-through' : 'none'}}>
-                                  {habit.name}
-                                </span>
-                              </div>
-                              <button
-                                onClick={() => deleteHabit(habit.id)}
-                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-
-                    {!showHabitForm ? (
-                      <button
-                        onClick={() => setShowHabitForm(true)}
-                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
-                      >
-                        ➕ 習慣を追加
-                      </button>
-                    ) : (
-                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>新しい習慣を追加</h2>
-                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                          <input
-                            type="text"
-                            placeholder="習慣の名前"
-                            value={newHabitName}
-                            onChange={(e) => setNewHabitName(e.target.value)}
-                          />
-                          <div style={{display: 'flex', gap: '0.5rem'}}>
-                            <button
-                              onClick={addHabit}
-                              style={{flex: 1, background: '#2563eb', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              追加
-                            </button>
-                            <button
-                              onClick={() => setShowHabitForm(false)}
-                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              キャンセル
-                            </button>
-                          </div>
-                        </div>
-                      </div>
                     )}
-                  </>
-                ) : (
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
-                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
-                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#60a5fa'}}>
-                        {habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%
-                      </p>
+                  </div>
+
+                  {!showHabitForm ? (
+                    <button onClick={() => setShowHabitForm(true)} style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #4b5563'}}>➕ 習慣を追加</button>
+                  ) : (
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                      <input type="text" placeholder="習慣の名前" value={newHabitName} onChange={(e) => setNewHabitName(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}} />
+                      <div style={{display: 'flex', gap: '0.5rem'}}>
+                        <button onClick={addHabit} style={{flex: 1, background: '#2563eb', color: 'white', padding: '0.5rem'}}>追加</button>
+                        <button onClick={() => setShowHabitForm(false)} style={{flex: 1, background: '#4b5563', color: 'white', padding: '0.5rem'}}>キャンセル</button>
+                      </div>
                     </div>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#60a5fa'}}>{habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%</p>
+                    </div>
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
                       <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>登録習慣数</p>
                       <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#fb923c'}}>{habits.length}</p>
                     </div>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
-                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本週完了数</p>
-                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#4ade80'}}>{getWeekStats().reduce((a, b) => a + (b.percentage > 0 ? 1 : 0), 0)}</p>
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>完了日数</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#4ade80'}}>{habits.reduce((sum, h) => sum + Object.keys(h.records).length, 0)}</p>
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
-          )}
 
-          {mode === 'goals' && (
-            <div style={{padding: '1rem'}}>
-              <div style={{maxWidth: '64rem', margin: '0 auto'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
-                  <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
-                  <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>目標トラッカー</h1>
-                </div>
-
-                <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
-                  <button
-                    onClick={() => setGoalView('record')}
-                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'record' ? '#ea580c' : '#374151', color: 'white'}}
-                  >
-                    記録
-                  </button>
-                  <button
-                    onClick={() => setGoalView('dashboard')}
-                    style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'dashboard' ? '#ea580c' : '#374151', color: 'white'}}
-                  >
-                    📊 分析
-                  </button>
-                </div>
-
-                {goalView === 'record' ? (
-                  <>
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <button
-                        onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, -1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        ←
-                      </button>
-                      <div style={{textAlign: 'center', flex: 1}}>
-                        <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{formatDate(selectedGoalDate)}</p>
-                      </div>
-                      <button
-                        onClick={() => setShowGoalCalendar(!showGoalCalendar)}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        📅
-                      </button>
-                      <button
-                        onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, 1))}
-                        style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-                      >
-                        →
-                      </button>
-                    </div>
-
-                    <div className="mb-6" style={{display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>
-                      <button
-                        onClick={() => setSelectedGoalTag('all')}
-                        style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', fontWeight: '500', whiteSpace: 'nowrap', background: selectedGoalTag === 'all' ? '#374151' : '#1f2937', color: 'white', border: '1px solid ' + (selectedGoalTag === 'all' ? '#4b5563' : '#374151')}}
-                      >
-                        全て
-                      </button>
-                      {tags.map(tag => (
-                        <button
-                          key={tag}
-                          onClick={() => setSelectedGoalTag(tag)}
-                          style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', fontWeight: '500', whiteSpace: 'nowrap', background: selectedGoalTag === tag ? '#ea580c' : '#1f2937', color: 'white', border: '1px solid ' + (selectedGoalTag === tag ? '#f97316' : '#374151')}}
-                        >
-                          {tag}
-                        </button>
+                  {habits.length > 0 && (
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>習慣ごとの達成率（7日間）</h2>
+                      {getHabitStats().map((stat, idx) => (
+                        <div key={idx} style={{display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: '#374151', padding: '1rem', borderRadius: '0.5rem', marginBottom: '0.75rem'}}>
+                          <span style={{flex: 1, overflow: 'hidden', textOverflow: 'ellipsis'}}>{stat.name}</span>
+                          <div style={{width: '100px', backgroundColor: '#4b5563', borderRadius: '9999px', height: '8px'}}>
+                            <div style={{backgroundColor: '#3b82f6', height: '8px', borderRadius: '9999px', width: `${stat.achievement}%`}}></div>
+                          </div>
+                          <span style={{fontWeight: 'bold', color: '#60a5fa', width: '40px', textAlign: 'right'}}>{stat.achievement}%</span>
+                        </div>
                       ))}
                     </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      }
 
-                    <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem'}}>
-                      {(selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).length === 0 ? (
-                        <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '2rem', textAlign: 'center', border: '1px solid #374151'}}>
-                          <p style={{color: '#9ca3af'}}>このカテゴリに目標がありません</p>
-                        </div>
-                      ) : (
-                        (selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).map(goal => (
-                          <div key={goal.id} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem'}}>
-                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                <h3 style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white'}}>{goal.name}</h3>
-                                <div style={{background: '#ea580c', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold'}}>
-                                  {goal.tag}
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => deleteGoal(goal.id)}
-                                style={{padding: '0.5rem', background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}
-                              >
-                                ✕
-                              </button>
-                            </div>
+      if (mode === 'goals') {
+        return (
+          <div style={{minHeight: '100vh', backgroundColor: '#111827', padding: '1rem'}}>
+            <div style={{maxWidth: '64rem', margin: '0 auto'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem'}}>
+                <button onClick={() => setMode(null)} style={{padding: '0.5rem', color: '#d1d5db', background: 'transparent'}}>←</button>
+                <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', color: 'white'}}>目標トラッカー</h1>
+              </div>
 
-                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem'}}>
-                              <button
-                                onClick={() => recordGoal(goal.id, 'min')}
-                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'min' ? '#ea580c' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'min' ? '#f97316' : '#4b5563')}}
-                              >
-                                MIN<br /><span style={{fontSize: '0.75rem'}}>{goal.min}</span>
-                              </button>
-                              <button
-                                onClick={() => recordGoal(goal.id, 'more')}
-                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'more' ? '#2563eb' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'more' ? '#3b82f6' : '#4b5563')}}
-                              >
-                                MORE<br /><span style={{fontSize: '0.75rem'}}>{goal.more}</span>
-                              </button>
-                              <button
-                                onClick={() => recordGoal(goal.id, 'max')}
-                                style={{padding: '0.75rem 1rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'max' ? '#16a34a' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'max' ? '#22c55e' : '#4b5563')}}
-                              >
-                                MAX<br /><span style={{fontSize: '0.75rem'}}>{goal.max}</span>
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
+              <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                <button onClick={() => setGoalView('record')} style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'record' ? '#ea580c' : '#374151', color: 'white'}}>記録</button>
+                <button onClick={() => setGoalView('dashboard')} style={{padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalView === 'dashboard' ? '#ea580c' : '#374151', color: 'white'}}>📊 分析</button>
+              </div>
 
-                    {!showGoalForm ? (
-                      <button
-                        onClick={() => setShowGoalForm(true)}
-                        style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px solid #4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}
-                      >
-                        ➕ 目標を追加
-                      </button>
+              {goalView === 'record' ? (
+                <>
+                  <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <button onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, -1))} style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px'}}>←</button>
+                    <p style={{fontSize: '1.25rem', fontWeight: 'bold', color: 'white', flex: 1, textAlign: 'center'}}>{formatDate(selectedGoalDate)}</p>
+                    <button onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, 1))} style={{padding: '0.75rem', background: '#374151', borderRadius: '0.5rem', color: '#d1d5db', width: '48px', height: '48px'}}>→</button>
+                  </div>
+
+                  <div style={{display: 'flex', gap: '0.5rem', overflowX: 'auto', marginBottom: '1.5rem', paddingBottom: '0.5rem'}}>
+                    <button onClick={() => setSelectedGoalTag('all')} style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', whiteSpace: 'nowrap', background: selectedGoalTag === 'all' ? '#374151' : '#1f2937', color: 'white'}}>全て</button>
+                    {tags.map(tag => <button key={tag} onClick={() => setSelectedGoalTag(tag)} style={{padding: '0.5rem 1rem', borderRadius: '0.5rem', whiteSpace: 'nowrap', background: selectedGoalTag === tag ? '#ea580c' : '#1f2937', color: 'white'}}>{tag}</button>)}
+                  </div>
+
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem'}}>
+                    {(selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).length === 0 ? (
+                      <p style={{color: '#9ca3af', textAlign: 'center', padding: '2rem'}}>このカテゴリに目標がありません</p>
                     ) : (
-                      <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                        <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>
-                          新しい目標を追加{selectedGoalTag !== 'all' && `・${selectedGoalTag}`}
-                        </h2>
-                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                          <input
-                            type="text"
-                            placeholder="目標名"
-                            value={newGoalName}
-                            onChange={(e) => setNewGoalName(e.target.value)}
-                          />
-                          {selectedGoalTag === 'all' && (
-                            <select
-                              value={newGoalTag}
-                              onChange={(e) => setNewGoalTag(e.target.value)}
-                            >
-                              <option value="">カテゴリを選択</option>
-                              {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
-                            </select>
-                          )}
-                          <input
-                            type="text"
-                            placeholder="MIN"
-                            value={newGoalMin}
-                            onChange={(e) => setNewGoalMin(e.target.value)}
-                          />
-                          <input
-                            type="text"
-                            placeholder="MORE"
-                            value={newGoalMore}
-                            onChange={(e) => setNewGoalMore(e.target.value)}
-                          />
-                          <input
-                            type="text"
-                            placeholder="MAX"
-                            value={newGoalMax}
-                            onChange={(e) => setNewGoalMax(e.target.value)}
-                          />
-                          <div style={{display: 'flex', gap: '0.5rem'}}>
-                            <button
-                              onClick={addGoal}
-                              style={{flex: 1, background: '#ea580c', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              追加
-                            </button>
-                            <button
-                              onClick={() => setShowGoalForm(false)}
-                              style={{flex: 1, background: '#4b5563', color: 'white', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.25rem'}}
-                            >
-                              キャンセル
-                            </button>
+                      (selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag)).map(goal => (
+                        <div key={goal.id} style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                            <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{goal.name}</h3>
+                            <button onClick={() => deleteGoal(goal.id)} style={{background: 'transparent', color: '#ef4444', fontSize: '1.25rem'}}>✕</button>
+                          </div>
+                          <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem'}}>
+                            <button onClick={() => recordGoal(goal.id, 'min')} style={{padding: '0.75rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'min' ? '#ea580c' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'min' ? '#f97316' : '#4b5563')}}>MIN<br />{goal.min}</button>
+                            <button onClick={() => recordGoal(goal.id, 'more')} style={{padding: '0.75rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'more' ? '#2563eb' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'more' ? '#3b82f6' : '#4b5563')}}>MORE<br />{goal.more}</button>
+                            <button onClick={() => recordGoal(goal.id, 'max')} style={{padding: '0.75rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goal.records[selectedGoalDate] === 'max' ? '#16a34a' : '#374151', color: 'white', border: '1px solid ' + (goal.records[selectedGoalDate] === 'max' ? '#22c55e' : '#4b5563')}}>MAX<br />{goal.max}</button>
                           </div>
                         </div>
-                      </div>
+                      ))
                     )}
-                  </>
-                ) : (
-                  <>
-                    <div className="mb-6" style={{display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #374151', paddingBottom: '1rem'}}>
-                      <button
-                        onClick={() => setSelectedGoalTag('all')}
-                        style={{padding: '0.5rem 1rem', fontWeight: '500', whiteSpace: 'nowrap', borderBottom: selectedGoalTag === 'all' ? '2px solid #9ca3af' : '2px solid transparent', background: 'transparent', color: selectedGoalTag === 'all' ? 'white' : '#9ca3af'}}
-                      >
-                        全て
-                      </button>
-                      {tags.map(tag => (
-                        <button
-                          key={tag}
-                          onClick={() => setSelectedGoalTag(tag)}
-                          style={{padding: '0.5rem 1rem', fontWeight: '500', whiteSpace: 'nowrap', borderBottom: selectedGoalTag === tag ? '2px solid #9ca3af' : '2px solid transparent', background: 'transparent', color: selectedGoalTag === tag ? 'white' : '#9ca3af'}}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
+                  </div>
 
-                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
-                      <button
-                        onClick={() => setGoalStatsPeriod('week')}
-                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'week' ? '#ea580c' : '#374151', color: 'white'}}
-                      >
-                        過去7日間
-                      </button>
-                      <button
-                        onClick={() => setGoalStatsPeriod('month')}
-                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'month' ? '#ea580c' : '#374151', color: 'white'}}
-                      >
-                        過去30日間
-                      </button>
-                      <button
-                        onClick={() => setGoalStatsPeriod('all')}
-                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'all' ? '#ea580c' : '#374151', color: 'white'}}
-                      >
-                        全期間
-                      </button>
-                    </div>
-
-                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
-                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>
-                        総合成果（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}）
-                      </h2>
-                      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
-                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem'}}>
-                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
-                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MAX達成</p>
-                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#4ade80'}}>
-                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.maxCount, 0)}回
-                            </p>
-                          </div>
-                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
-                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MORE達成</p>
-                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#60a5fa'}}>
-                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.moreCount, 0)}回
-                            </p>
-                          </div>
-                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
-                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MIN達成</p>
-                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>
-                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.minCount, 0)}回
-                            </p>
-                          </div>
-                        </div>
+                  {!showGoalForm ? (
+                    <button onClick={() => setShowGoalForm(true)} style={{width: '100%', background: '#374151', color: 'white', fontWeight: 'bold', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #4b5563'}}>➕ 目標を追加</button>
+                  ) : (
+                    <div style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                      <input type="text" placeholder="目標名" value={newGoalName} onChange={(e) => setNewGoalName(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}} />
+                      {selectedGoalTag === 'all' && (
+                        <select value={newGoalTag} onChange={(e) => setNewGoalTag(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}}>
+                          <option value="">カテゴリを選択</option>
+                          {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+                        </select>
+                      )}
+                      <input type="text" placeholder="MIN" value={newGoalMin} onChange={(e) => setNewGoalMin(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}} />
+                      <input type="text" placeholder="MORE" value={newGoalMore} onChange={(e) => setNewGoalMore(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}} />
+                      <input type="text" placeholder="MAX" value={newGoalMax} onChange={(e) => setNewGoalMax(e.target.value)} style={{width: '100%', marginBottom: '0.75rem'}} />
+                      <div style={{display: 'flex', gap: '0.5rem'}}>
+                        <button onClick={addGoal} style={{flex: 1, background: '#ea580c', color: 'white', padding: '0.5rem'}}>追加</button>
+                        <button onClick={() => setShowGoalForm(false)} style={{flex: 1, background: '#4b5563', color: 'white', padding: '0.5rem'}}>キャンセル</button>
                       </div>
                     </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                    <button onClick={() => setGoalStatsPeriod('week')} style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'week' ? '#ea580c' : '#374151', color: 'white'}}>過去7日間</button>
+                    <button onClick={() => setGoalStatsPeriod('month')} style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'month' ? '#ea580c' : '#374151', color: 'white'}}>過去30日間</button>
+                  </div>
 
+                  {getGoalStatsForPeriod().length > 0 && (
                     <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>目標ごとの成果</h2>
-                      {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).length === 0 ? (
-                        <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '2rem', textAlign: 'center', border: '1px solid #374151'}}>
-                          <p style={{color: '#9ca3af'}}>このカテゴリに目標がありません</p>
-                        </div>
-                      ) : (
-                        getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).map((stat, idx) => {
-                          const totalDays = goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1);
-                          const maxDeg = (stat.maxCount / totalDays) * 360;
-                          const moreDeg = (stat.moreCount / totalDays) * 360;
-                          const minDeg = (stat.minCount / totalDays) * 360;
-                          
-                          let conic = `#4ade80 0deg ${maxDeg}deg, #60a5fa ${maxDeg}deg ${maxDeg + moreDeg}deg, #fb923c ${maxDeg + moreDeg}deg ${maxDeg + moreDeg + minDeg}deg, #4b5563 ${maxDeg + moreDeg + minDeg}deg 360deg`;
-                          
-                          return (
-                            <div key={idx} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
-                              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
-                                <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{stat.name}</h3>
-                                <span style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>{stat.achievement}%</span>
-                              </div>
-                              
-                              <div style={{
-                                width: '150px',
-                                height: '150px',
-                                borderRadius: '50%',
-                                background: `conic-gradient(${conic})`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                margin: '1rem auto'
-                              }}>
-                                <div style={{
-                                  width: '120px',
-                                  height: '120px',
-                                  borderRadius: '50%',
-                                  backgroundColor: '#1f2937',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: 'white',
-                                  fontWeight: 'bold',
-                                  fontSize: '1.25rem'
-                                }}>
-                                  {stat.achievement}%
-                                </div>
-                              </div>
-                              
-                              <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem'}}>
-                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#4ade80'}}></div>
-                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MAX達成: {stat.maxCount}日</span>
-                                </div>
-                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#60a5fa'}}></div>
-                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MORE達成: {stat.moreCount}日</span>
-                                </div>
-                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                  <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#fb923c'}}></div>
-                                  <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MIN達成: {stat.minCount}日</span>
-                                </div>
+                      {getGoalStatsForPeriod().map((stat, idx) => {
+                        const totalDays = goalStatsPeriod === 'week' ? 7 : 30;
+                        const maxDeg = (stat.maxCount / totalDays) * 360;
+                        const moreDeg = (stat.moreCount / totalDays) * 360;
+                        const minDeg = (stat.minCount / totalDays) * 360;
+                        
+                        return (
+                          <div key={idx} style={{backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                              <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{stat.name}</h3>
+                              <span style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>{stat.achievement}%</span>
+                            </div>
+                            
+                            <div style={{
+                              width: '150px',
+                              height: '150px',
+                              borderRadius: '50%',
+                              background: `conic-gradient(#4ade80 0deg ${maxDeg}deg, #60a5fa ${maxDeg}deg ${maxDeg + moreDeg}deg, #fb923c ${maxDeg + moreDeg}deg ${maxDeg + moreDeg + minDeg}deg, #4b5563 ${maxDeg + moreDeg + minDeg}deg 360deg)`,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              margin: '1rem auto'
+                            }}>
+                              <div style={{width: '120px', height: '120px', borderRadius: '50%', backgroundColor: '#1f2937', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '1.25rem'}}>
+                                {stat.achievement}%
                               </div>
                             </div>
-                          );
-                        })
-                      )}
+                            
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#4ade80'}}></div>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MAX: {stat.maxCount}日</span>
+                              </div>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#60a5fa'}}></div>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MORE: {stat.moreCount}日</span>
+                              </div>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <div style={{width: '12px', height: '12px', borderRadius: '2px', backgroundColor: '#fb923c'}}></div>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af'}}>MIN: {stat.minCount}日</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </>
-                )}
-              </div>
+                  )}
+                </>
+              )}
             </div>
-          )}
-        </div>
-      );
+          </div>
+        );
+      }
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<HabitTracker />);
