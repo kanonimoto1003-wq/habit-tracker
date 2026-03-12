@@ -267,6 +267,35 @@
         });
       };
 
+      const getGoalStatsForPeriod = () => {
+        const days = goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : 30;
+        return goals.map(goal => {
+          let minCount = 0, moreCount = 0, maxCount = 0, totalRecordedDays = 0;
+          for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            const level = goal.records[dateStr];
+            if (level === 'min') { minCount++; totalRecordedDays++; }
+            if (level === 'more') { moreCount++; totalRecordedDays++; }
+            if (level === 'max') { maxCount++; totalRecordedDays++; }
+          }
+          const totalAchieved = minCount + moreCount + maxCount;
+          const displayDays = goalStatsPeriod === 'month' ? days : (totalRecordedDays > 0 ? totalRecordedDays : 1);
+          
+          return {
+            name: goal.name,
+            tag: goal.tag,
+            minCount,
+            moreCount,
+            maxCount,
+            totalAchieved,
+            totalDays: displayDays,
+            achievement: Math.round((totalAchieved / displayDays) * 100)
+          };
+        });
+      };
+
       return (
         <div className="min-h-screen bg-gray-900">
           {!mode && (
@@ -276,7 +305,7 @@
               
               <div style={{position: 'relative', zIndex: 10, background: '#111827', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '3rem', maxWidth: '28rem', width: '100%', border: '1px solid #1f2937'}}>
                 <div style={{textAlign: 'center', marginBottom: '3rem'}}>
-                  <h1 style={{fontSize: '3.75rem', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.05em', background: 'linear-gradient(to right, #60a5fa, #fb923c, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'}}>
+                  <h1 style={{fontSize: 'clamp(2rem, 8vw, 3.75rem)', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.05em', background: 'linear-gradient(to right, #60a5fa, #fb923c, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', wordWrap: 'break-word'}}>
                     PROGRESS
                   </h1>
                   <p style={{color: '#9ca3af', fontSize: '1.125rem'}}>毎日の成長を追跡する</p>
@@ -364,6 +393,42 @@
                         {habits.length === 0 ? (
                           <p style={{color: '#9ca3af', textAlign: 'center', padding: '1.5rem'}}>習慣がまだ登録されていません</p>
                         ) : (
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem'}}>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本日の達成率</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#60a5fa'}}>
+                        {habits.length === 0 ? 0 : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100)}%
+                      </p>
+                    </div>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>登録習慣数</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#fb923c'}}>{habits.length}</p>
+                    </div>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #374151'}}>
+                      <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>本週完了数</p>
+                      <p style={{fontSize: '1.875rem', fontWeight: 'bold', color: '#4ade80'}}>{getWeekStats().reduce((a, b) => a + (b.percentage > 0 ? 1 : 0), 0)}</p>
+                    </div>
+                  </div>
+                )}
+
+                {habitView === 'dashboard' && habits.length > 0 && (
+                  <>
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>習慣ごとの達成率（7日間）</h2>
+                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                        {getHabitStats().map((stat, idx) => (
+                          <div key={idx} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
+                            <span style={{fontWeight: '500', color: '#f3f4f6', width: '33%', overflow: 'hidden', textOverflow: 'ellipsis'}}>{stat.name}</span>
+                            <div style={{width: '33%', backgroundColor: '#4b5563', borderRadius: '9999px', height: '8px', margin: '0 1rem'}}>
+                              <div style={{backgroundColor: '#3b82f6', height: '8px', borderRadius: '9999px', width: `${stat.achievement}%`}}></div>
+                            </div>
+                            <span style={{fontWeight: 'bold', color: '#60a5fa', width: '16.66%', textAlign: 'right'}}>{stat.achievement}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )} : (
                           habits.map(habit => (
                             <div key={habit.id} style={{background: '#374151', borderRadius: '0.5rem', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #4b5563'}}>
                               <div style={{display: 'flex', alignItems: 'center', gap: '1rem', flex: 1}}>
@@ -626,9 +691,115 @@
                     )}
                   </>
                 ) : (
-                  <div style={{textAlign: 'center', color: '#9ca3af', padding: '2rem'}}>
-                    <p>Vercel版では分析機能は簡略版です</p>
-                  </div>
+                  <>
+                    <div className="mb-6" style={{display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #374151', paddingBottom: '1rem'}}>
+                      <button
+                        onClick={() => setSelectedGoalTag('all')}
+                        style={{padding: '0.5rem 1rem', fontWeight: '500', whiteSpace: 'nowrap', borderBottom: selectedGoalTag === 'all' ? '2px solid #9ca3af' : '2px solid transparent', background: 'transparent', color: selectedGoalTag === 'all' ? 'white' : '#9ca3af'}}
+                      >
+                        全て
+                      </button>
+                      {tags.map(tag => (
+                        <button
+                          key={tag}
+                          onClick={() => setSelectedGoalTag(tag)}
+                          style={{padding: '0.5rem 1rem', fontWeight: '500', whiteSpace: 'nowrap', borderBottom: selectedGoalTag === tag ? '2px solid #9ca3af' : '2px solid transparent', background: 'transparent', color: selectedGoalTag === tag ? 'white' : '#9ca3af'}}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1.5rem'}}>
+                      <button
+                        onClick={() => setGoalStatsPeriod('week')}
+                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'week' ? '#ea580c' : '#374151', color: 'white'}}
+                      >
+                        過去7日間
+                      </button>
+                      <button
+                        onClick={() => setGoalStatsPeriod('month')}
+                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'month' ? '#ea580c' : '#374151', color: 'white'}}
+                      >
+                        過去30日間
+                      </button>
+                      <button
+                        onClick={() => setGoalStatsPeriod('all')}
+                        style={{padding: '0.5rem 1.5rem', borderRadius: '0.5rem', fontWeight: 'bold', background: goalStatsPeriod === 'all' ? '#ea580c' : '#374151', color: 'white'}}
+                      >
+                        全期間
+                      </button>
+                    </div>
+
+                    <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #374151'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem'}}>
+                        総合成果（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}）
+                      </h2>
+                      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem'}}>
+                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
+                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MAX達成</p>
+                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#4ade80'}}>
+                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.maxCount, 0)}回
+                            </p>
+                          </div>
+                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
+                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MORE達成</p>
+                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#60a5fa'}}>
+                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.moreCount, 0)}回
+                            </p>
+                          </div>
+                          <div style={{background: '#374151', padding: '1rem', borderRadius: '0.5rem'}}>
+                            <p style={{color: '#9ca3af', fontSize: '0.875rem'}}>MIN達成</p>
+                            <p style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>
+                              {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).reduce((sum, g) => sum + g.minCount, 0)}回
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                      <h2 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>目標ごとの成果</h2>
+                      {getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).length === 0 ? (
+                        <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '2rem', textAlign: 'center', border: '1px solid #374151'}}>
+                          <p style={{color: '#9ca3af'}}>このカテゴリに目標がありません</p>
+                        </div>
+                      ) : (
+                        getGoalStatsForPeriod().filter(g => selectedGoalTag === 'all' || g.tag === selectedGoalTag).map((stat, idx) => (
+                          <div key={idx} style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', border: '1px solid #374151'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                              <h3 style={{fontSize: '1.125rem', fontWeight: 'bold', color: 'white'}}>{stat.name}</h3>
+                              <span style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fb923c'}}>{stat.achievement}%</span>
+                            </div>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MAX達成</span>
+                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
+                                  <div style={{background: '#4ade80', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.maxCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
+                                </div>
+                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#4ade80', width: '40px', textAlign: 'right'}}>{stat.maxCount}</span>
+                              </div>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MORE達成</span>
+                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
+                                  <div style={{background: '#60a5fa', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.moreCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
+                                </div>
+                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#60a5fa', width: '40px', textAlign: 'right'}}>{stat.moreCount}</span>
+                              </div>
+                              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                <span style={{fontSize: '0.875rem', color: '#9ca3af', width: '80px'}}>MIN達成</span>
+                                <div style={{flex: 1, background: '#374151', borderRadius: '9999px', height: '8px'}}>
+                                  <div style={{background: '#fb923c', height: '8px', borderRadius: '9999px', width: `${Math.round((stat.minCount / (goalStatsPeriod === 'week' ? 7 : goalStatsPeriod === 'month' ? 30 : Math.max(stat.maxCount + stat.moreCount + stat.minCount, 1))) * 100)}%`}}></div>
+                                </div>
+                                <span style={{fontSize: '0.875rem', fontWeight: 'bold', color: '#fb923c', width: '40px', textAlign: 'right'}}>{stat.minCount}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
