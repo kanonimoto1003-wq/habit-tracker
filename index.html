@@ -25,189 +25,122 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // ---- Chart Components ----
-
     function DonutChart({ data, size = 160 }) {
       const canvasRef = useRef(null);
       const chartRef = useRef(null);
-
       useEffect(() => {
         if (!canvasRef.current) return;
         if (chartRef.current) chartRef.current.destroy();
-
         const ctx = canvasRef.current.getContext('2d');
         chartRef.current = new Chart(ctx, {
           type: 'doughnut',
           data: {
             labels: data.map(d => d.name),
-            datasets: [{
-              data: data.map(d => d.value),
-              backgroundColor: data.map(d => d.color),
-              borderWidth: 0,
-              hoverOffset: 4
-            }]
+            datasets: [{ data: data.map(d => d.value), backgroundColor: data.map(d => d.color), borderWidth: 0, hoverOffset: 4 }]
           },
           options: {
             responsive: false,
             cutout: '65%',
             plugins: {
               legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: (ctx) => ` ${ctx.label}: ${ctx.raw}日`
-                }
-              }
+              tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw}` } }
             }
           }
         });
         return () => { if (chartRef.current) chartRef.current.destroy(); };
       }, [JSON.stringify(data)]);
-
       return <canvas ref={canvasRef} width={size} height={size} />;
     }
 
     function LineChartComp({ data }) {
       const canvasRef = useRef(null);
       const chartRef = useRef(null);
-
       useEffect(() => {
         if (!canvasRef.current) return;
         if (chartRef.current) chartRef.current.destroy();
-
         const ctx = canvasRef.current.getContext('2d');
         chartRef.current = new Chart(ctx, {
           type: 'line',
           data: {
             labels: data.map(d => d.date),
-            datasets: [{
-              label: '達成率',
-              data: data.map(d => d.percentage),
-              borderColor: '#3b82f6',
-              backgroundColor: 'rgba(59,130,246,0.15)',
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: '#3b82f6',
-              pointRadius: 5
-            }]
+            datasets: [{ label: '達成率', data: data.map(d => d.percentage), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', fill: true, tension: 0.4, pointBackgroundColor: '#3b82f6', pointRadius: 5 }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-              y: {
-                min: 0, max: 100,
-                ticks: { color: '#9ca3af', callback: v => v + '%' },
-                grid: { color: '#374151' }
-              },
-              x: {
-                ticks: { color: '#9ca3af' },
-                grid: { color: '#374151' }
-              }
+              y: { min: 0, max: 100, ticks: { color: '#9ca3af', callback: v => v + '%' }, grid: { color: '#374151' } },
+              x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }
             },
-            plugins: {
-              legend: { display: false },
-              tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
-            }
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } } }
           }
         });
         return () => { if (chartRef.current) chartRef.current.destroy(); };
       }, [JSON.stringify(data)]);
-
-      return (
-        <div style={{ position: 'relative', height: '250px', width: '100%' }}>
-          <canvas ref={canvasRef} />
-        </div>
-      );
+      return <div style={{ position: 'relative', height: '250px', width: '100%' }}><canvas ref={canvasRef} /></div>;
     }
-
-    // ---- Main App ----
 
     function HabitTracker() {
       const [mode, setMode] = useState(null);
-      const [habits, setHabits] = useState(() => {
-        try { const s = localStorage.getItem('habits'); return s ? JSON.parse(s) : []; } catch { return []; }
-      });
-      const [goals, setGoals] = useState(() => {
-        try { const s = localStorage.getItem('goals'); return s ? JSON.parse(s) : []; } catch { return []; }
-      });
+      const [habits, setHabits] = useState(() => { try { const s = localStorage.getItem('habits'); return s ? JSON.parse(s) : []; } catch { return []; } });
+      const [goals,  setGoals]  = useState(() => { try { const s = localStorage.getItem('goals');  return s ? JSON.parse(s) : []; } catch { return []; } });
       const [habitView, setHabitView] = useState('record');
-      const [goalView, setGoalView] = useState('record');
-      const [selectedGoalTag, setSelectedGoalTag] = useState('all');
-      const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+      const [goalView,  setGoalView]  = useState('record');
+      const [selectedGoalTag,  setSelectedGoalTag]  = useState('all');
+      const [selectedDate,     setSelectedDate]     = useState(new Date().toISOString().split('T')[0]);
       const [selectedGoalDate, setSelectedGoalDate] = useState(new Date().toISOString().split('T')[0]);
       const [showHabitForm, setShowHabitForm] = useState(false);
-      const [showGoalForm, setShowGoalForm] = useState(false);
+      const [showGoalForm,  setShowGoalForm]  = useState(false);
       const [newHabitName, setNewHabitName] = useState('');
-      const [newGoalName, setNewGoalName] = useState('');
-      const [newGoalTag, setNewGoalTag] = useState('');
-      const [newGoalMin, setNewGoalMin] = useState('');
-      const [newGoalMore, setNewGoalMore] = useState('');
-      const [newGoalMax, setNewGoalMax] = useState('');
+      const [newGoalName,  setNewGoalName]  = useState('');
+      const [newGoalTag,   setNewGoalTag]   = useState('');
+      const [newGoalMin,   setNewGoalMin]   = useState('');
+      const [newGoalMore,  setNewGoalMore]  = useState('');
+      const [newGoalMax,   setNewGoalMax]   = useState('');
       const [goalStatsPeriod, setGoalStatsPeriod] = useState('month');
 
       const today = new Date().toISOString().split('T')[0];
       const tags = ['健康', '学習', '仕事', '趣味', '運動'];
+      const tagColor = { '健康': '#ea580c', '学習': '#2563eb', '仕事': '#6b7280', '趣味': '#16a34a', '運動': '#f59e0b' };
+      const periodLabel = goalStatsPeriod === 'week' ? '過去7日間' : '過去30日間';
 
-      const saveHabits = (updated) => { setHabits(updated); localStorage.setItem('habits', JSON.stringify(updated)); };
-      const saveGoals  = (updated) => { setGoals(updated);  localStorage.setItem('goals',  JSON.stringify(updated)); };
+      const saveHabits = (u) => { setHabits(u); localStorage.setItem('habits', JSON.stringify(u)); };
+      const saveGoals  = (u) => { setGoals(u);  localStorage.setItem('goals',  JSON.stringify(u)); };
 
       const formatDate = (dateStr) => {
         const d = new Date(dateStr + 'T12:00:00');
         return d.toLocaleString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short', timeZone: 'Asia/Tokyo' });
       };
-
       const changeDate = (dateStr, days) => {
         const d = new Date(dateStr + 'T12:00:00');
         d.setDate(d.getDate() + days);
         return d.toISOString().split('T')[0];
       };
 
-      // ---- Habit helpers ----
-      const addHabit = () => {
-        if (!newHabitName.trim()) return;
-        saveHabits([...habits, { id: Date.now(), name: newHabitName, records: {} }]);
-        setNewHabitName(''); setShowHabitForm(false);
-      };
+      const addHabit    = () => { if (!newHabitName.trim()) return; saveHabits([...habits, { id: Date.now(), name: newHabitName, records: {} }]); setNewHabitName(''); setShowHabitForm(false); };
       const toggleHabit = (id) => saveHabits(habits.map(h => h.id === id ? { ...h, records: { ...h.records, [selectedDate]: !h.records[selectedDate] } } : h));
       const deleteHabit = (id) => saveHabits(habits.filter(h => h.id !== id));
 
-      const getWeekStats = () => {
-        return Array.from({ length: 7 }, (_, i) => {
-          const d = new Date(); d.setDate(d.getDate() - (6 - i));
-          const dateStr = d.toISOString().split('T')[0];
-          const completed = habits.filter(h => h.records[dateStr]).length;
-          return { date: dateStr.slice(5), percentage: habits.length === 0 ? 0 : Math.round((completed / habits.length) * 100) };
-        });
-      };
-
-      const getHabitStats = () => habits.map(habit => {
-        let completed = 0;
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(); d.setDate(d.getDate() - i);
-          if (habit.records[d.toISOString().split('T')[0]]) completed++;
-        }
-        return { name: habit.name, achievement: Math.round((completed / 7) * 100) };
+      const getWeekStats = () => Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - (6 - i));
+        const ds = d.toISOString().split('T')[0];
+        const done = habits.filter(h => h.records[ds]).length;
+        return { date: ds.slice(5), percentage: habits.length === 0 ? 0 : Math.round((done / habits.length) * 100) };
       });
 
-      // Habit pie: completed vs not today
+      const getHabitStats = () => habits.map(habit => {
+        let done = 0;
+        for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); if (habit.records[d.toISOString().split('T')[0]]) done++; }
+        return { name: habit.name, achievement: Math.round((done / 7) * 100) };
+      });
+
       const getHabitPieData = () => {
         const done = habits.filter(h => h.records[today]).length;
-        const notDone = habits.length - done;
-        return [
-          { name: '達成', value: done,   color: '#22c55e' },
-          { name: '未達成', value: notDone, color: '#4b5563' }
-        ];
+        return [{ name: '達成', value: done, color: '#22c55e' }, { name: '未達成', value: habits.length - done, color: '#4b5563' }];
       };
 
-      // ---- Goal helpers ----
-      const addGoal = () => {
-        if (!newGoalName.trim() || !newGoalMin || !newGoalMore || !newGoalMax) return;
-        saveGoals([...goals, { id: Date.now(), name: newGoalName, tag: newGoalTag || (selectedGoalTag !== 'all' ? selectedGoalTag : '健康'), min: newGoalMin, more: newGoalMore, max: newGoalMax, records: {} }]);
-        setNewGoalName(''); setNewGoalMin(''); setNewGoalMore(''); setNewGoalMax(''); setNewGoalTag(''); setShowGoalForm(false);
-      };
-      const recordGoal = (id, level) => {
-        saveGoals(goals.map(g => g.id === id ? { ...g, records: { ...g.records, [selectedGoalDate]: g.records[selectedGoalDate] === level ? null : level } } : g));
-      };
+      const addGoal    = () => { if (!newGoalName.trim() || !newGoalMin || !newGoalMore || !newGoalMax) return; saveGoals([...goals, { id: Date.now(), name: newGoalName, tag: newGoalTag || (selectedGoalTag !== 'all' ? selectedGoalTag : '健康'), min: newGoalMin, more: newGoalMore, max: newGoalMax, records: {} }]); setNewGoalName(''); setNewGoalMin(''); setNewGoalMore(''); setNewGoalMax(''); setNewGoalTag(''); setShowGoalForm(false); };
+      const recordGoal = (id, level) => saveGoals(goals.map(g => g.id === id ? { ...g, records: { ...g.records, [selectedGoalDate]: g.records[selectedGoalDate] === level ? null : level } } : g));
       const deleteGoal = (id) => saveGoals(goals.filter(g => g.id !== id));
 
       const getGoalStats = (tag = 'all') => {
@@ -218,9 +151,7 @@
           for (let i = days - 1; i >= 0; i--) {
             const d = new Date(); d.setDate(d.getDate() - i);
             const lv = goal.records[d.toISOString().split('T')[0]];
-            if (lv === 'min') min++;
-            if (lv === 'more') more++;
-            if (lv === 'max') max++;
+            if (lv === 'min') min++; if (lv === 'more') more++; if (lv === 'max') max++;
           }
           const total = min + more + max;
           return {
@@ -228,9 +159,9 @@
             minCount: min, moreCount: more, maxCount: max, totalAchieved: total, totalDays: days,
             achievement: Math.round((total / days) * 100),
             pieData: [
-              { name: 'MAX',  value: max,        color: '#16a34a' },
-              { name: 'MORE', value: more,        color: '#2563eb' },
-              { name: 'MIN',  value: min,         color: '#ea580c' },
+              { name: 'MAX',   value: max,                        color: '#16a34a' },
+              { name: 'MORE',  value: more,                       color: '#2563eb' },
+              { name: 'MIN',   value: min,                        color: '#ea580c' },
               { name: '未達成', value: Math.max(0, days - total), color: '#4b5563' }
             ]
           };
@@ -241,20 +172,32 @@
         const stats = getGoalStats(tag);
         let maxT = 0, moreT = 0, minT = 0, days = 0;
         stats.forEach(s => { maxT += s.maxCount; moreT += s.moreCount; minT += s.minCount; days += s.totalDays; });
-        const none = Math.max(0, days - maxT - moreT - minT);
         return [
-          { name: 'MAX',  value: maxT,  color: '#16a34a' },
-          { name: 'MORE', value: moreT, color: '#2563eb' },
-          { name: 'MIN',  value: minT,  color: '#ea580c' },
-          { name: '未達成', value: none, color: '#4b5563' }
+          { name: 'MAX',   value: maxT,                                    color: '#16a34a' },
+          { name: 'MORE',  value: moreT,                                   color: '#2563eb' },
+          { name: 'MIN',   value: minT,                                    color: '#ea580c' },
+          { name: '未達成', value: Math.max(0, days - maxT - moreT - minT), color: '#4b5563' }
         ];
       };
 
-      // ---- Styles ----
-      const card = { backgroundColor: '#1f2937', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #374151' };
+      // 記録あり日のみの内訳（未達成を除外）
+      const getRecordedLevelData = (tag = 'all') => {
+        const stats = getGoalStats(tag);
+        let maxT = 0, moreT = 0, minT = 0;
+        stats.forEach(s => { maxT += s.maxCount; moreT += s.moreCount; minT += s.minCount; });
+        const total = maxT + moreT + minT;
+        const arr = [
+          { name: 'MAX',  value: maxT,  color: '#16a34a' },
+          { name: 'MORE', value: moreT, color: '#2563eb' },
+          { name: 'MIN',  value: minT,  color: '#ea580c' }
+        ].filter(d => d.value > 0);
+        return { data: arr.length > 0 ? arr : [{ name: 'データなし', value: 1, color: '#374151' }], total, maxT, moreT, minT };
+      };
+
+      const card    = { backgroundColor: '#1f2937', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #374151' };
       const btnBase = { borderRadius: '0.5rem', fontWeight: 'bold', color: 'white', padding: '0.75rem 1.5rem', border: 'none' };
 
-      // ---- HOME ----
+      // HOME
       if (!mode) return (
         <div style={{ minHeight: '100vh', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 320, height: 320, background: '#2563eb', borderRadius: '50%', filter: 'blur(80px)', opacity: 0.12 }} />
@@ -266,13 +209,11 @@
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <button onClick={() => { setMode('habits'); setHabitView('record'); setSelectedDate(today); }} style={{ ...btnBase, background: 'linear-gradient(to right,#2563eb,#1d4ed8)', border: '1px solid #3b82f6', padding: '1.25rem' }}>
-                <div style={{ fontSize: '2rem' }}>📋</div>
-                <div>習慣トラッカー</div>
+                <div style={{ fontSize: '2rem' }}>📋</div><div>習慣トラッカー</div>
                 <div style={{ fontWeight: 'normal', fontSize: '0.875rem', opacity: 0.85, marginTop: '0.25rem' }}>日々の習慣を記録</div>
               </button>
               <button onClick={() => { setMode('goals'); setGoalView('record'); setSelectedGoalTag('all'); setSelectedGoalDate(today); }} style={{ ...btnBase, background: 'linear-gradient(to right,#ea580c,#c2410c)', border: '1px solid #f97316', padding: '1.25rem' }}>
-                <div style={{ fontSize: '2rem' }}>🎯</div>
-                <div>目標トラッカー</div>
+                <div style={{ fontSize: '2rem' }}>🎯</div><div>目標トラッカー</div>
                 <div style={{ fontWeight: 'normal', fontSize: '0.875rem', opacity: 0.85, marginTop: '0.25rem' }}>レベル別目標を追跡</div>
               </button>
             </div>
@@ -280,18 +221,16 @@
         </div>
       );
 
-      // ---- HABITS ----
+      // HABITS
       if (mode === 'habits') return (
         <div style={{ minHeight: '100vh', backgroundColor: '#111827', padding: '1rem' }}>
           <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
               <button onClick={() => setMode(null)} style={{ ...btnBase, background: '#374151', padding: '0.5rem 1rem' }}>←</button>
-              <h1 style={{ fontSize: '1.875rem', fontWeight: 900, color: 'white' }}>習慣トラッカー</h1>
+              <h1 style={{ fontSize: '1.875rem', fontWeight: 900 }}>習慣トラッカー</h1>
             </div>
-
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              {['record', 'dashboard'].map(v => (
+              {['record','dashboard'].map(v => (
                 <button key={v} onClick={() => setHabitView(v)} style={{ ...btnBase, background: habitView === v ? '#2563eb' : '#374151', padding: '0.6rem 1.25rem' }}>
                   {v === 'record' ? '記録' : '📊 分析'}
                 </button>
@@ -300,14 +239,11 @@
 
             {habitView === 'record' ? (
               <>
-                {/* Date nav */}
                 <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', padding: '0.75rem 1rem' }}>
                   <button onClick={() => setSelectedDate(changeDate(selectedDate, -1))} style={{ ...btnBase, background: '#374151', padding: '0.6rem 1rem' }}>←</button>
                   <p style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '1.125rem' }}>{formatDate(selectedDate)}</p>
                   <button onClick={() => setSelectedDate(changeDate(selectedDate, 1))} style={{ ...btnBase, background: '#374151', padding: '0.6rem 1rem' }}>→</button>
                 </div>
-
-                {/* Habit list */}
                 <div style={{ ...card, marginBottom: '1.5rem' }}>
                   {habits.length === 0
                     ? <p style={{ color: '#9ca3af', textAlign: 'center', padding: '2rem' }}>習慣がまだ登録されていません</p>
@@ -315,15 +251,13 @@
                         {habits.map(h => (
                           <div key={h.id} style={{ backgroundColor: '#374151', borderRadius: '0.5rem', padding: '0.875rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid #4b5563' }}>
                             <input type="checkbox" checked={!!h.records[selectedDate]} onChange={() => toggleHabit(h.id)} />
-                            <span style={{ flex: 1, color: h.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: h.records[selectedDate] ? 'line-through' : 'none', fontSize: '1rem' }}>{h.name}</span>
+                            <span style={{ flex: 1, color: h.records[selectedDate] ? '#6b7280' : '#f3f4f6', textDecoration: h.records[selectedDate] ? 'line-through' : 'none' }}>{h.name}</span>
                             <button onClick={() => deleteHabit(h.id)} style={{ background: 'transparent', color: '#ef4444', fontSize: '1.25rem', padding: '0 0.25rem' }}>✕</button>
                           </div>
                         ))}
                       </div>
                   }
                 </div>
-
-                {/* Add habit */}
                 {!showHabitForm
                   ? <button onClick={() => setShowHabitForm(true)} style={{ ...btnBase, background: '#374151', border: '1px solid #4b5563', width: '100%', padding: '0.875rem' }}>＋ 習慣を追加</button>
                   : <div style={card}>
@@ -338,7 +272,6 @@
               </>
             ) : (
               <>
-                {/* Stats cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
                   {[
                     { label: '本日の達成率', value: habits.length === 0 ? '0%' : Math.round((habits.filter(h => h.records[today]).length / habits.length) * 100) + '%', color: '#60a5fa' },
@@ -351,34 +284,26 @@
                     </div>
                   ))}
                 </div>
-
                 {habits.length > 0 && (
                   <>
-                    {/* Pie: today */}
                     <div style={{ ...card, marginBottom: '1.5rem' }}>
                       <h2 style={{ fontWeight: 'bold', marginBottom: '1.25rem' }}>本日の達成状況</h2>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <DonutChart data={getHabitPieData()} size={180} />
-                        </div>
+                        <DonutChart data={getHabitPieData()} size={180} />
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                           {getHabitPieData().map(d => (
                             <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: d.color, flexShrink: 0 }} />
+                              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: d.color }} />
                               <span style={{ color: '#d1d5db' }}>{d.name}: <strong style={{ color: 'white' }}>{d.value}個</strong></span>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
-
-                    {/* Line: week */}
                     <div style={{ ...card, marginBottom: '1.5rem' }}>
                       <h2 style={{ fontWeight: 'bold', marginBottom: '1.25rem' }}>今週の達成率推移</h2>
                       <LineChartComp data={getWeekStats()} />
                     </div>
-
-                    {/* Bar: per habit */}
                     <div style={card}>
                       <h2 style={{ fontWeight: 'bold', marginBottom: '1.25rem' }}>習慣ごとの達成率（7日間）</h2>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -403,22 +328,20 @@
         </div>
       );
 
-      // ---- GOALS ----
+      // GOALS
       if (mode === 'goals') {
         const filteredGoals = selectedGoalTag === 'all' ? goals : goals.filter(g => g.tag === selectedGoalTag);
-        const tagColor = { '健康': '#ea580c', '学習': '#2563eb', '仕事': '#6b7280', '趣味': '#16a34a', '運動': '#ea580c' };
+        const recordedLevel = getRecordedLevelData(selectedGoalTag);
 
         return (
           <div style={{ minHeight: '100vh', backgroundColor: '#111827', padding: '1rem' }}>
             <div style={{ maxWidth: '64rem', margin: '0 auto' }}>
-
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
                 <button onClick={() => setMode(null)} style={{ ...btnBase, background: '#374151', padding: '0.5rem 1rem' }}>←</button>
-                <h1 style={{ fontSize: '1.875rem', fontWeight: 900, color: 'white' }}>目標トラッカー</h1>
+                <h1 style={{ fontSize: '1.875rem', fontWeight: 900 }}>目標トラッカー</h1>
               </div>
-
               <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                {['record', 'dashboard'].map(v => (
+                {['record','dashboard'].map(v => (
                   <button key={v} onClick={() => setGoalView(v)} style={{ ...btnBase, background: goalView === v ? '#ea580c' : '#374151', padding: '0.6rem 1.25rem' }}>
                     {v === 'record' ? '記録' : '📊 分析'}
                   </button>
@@ -427,22 +350,17 @@
 
               {goalView === 'record' ? (
                 <>
-                  {/* Date nav */}
                   <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', padding: '0.75rem 1rem' }}>
                     <button onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, -1))} style={{ ...btnBase, background: '#374151', padding: '0.6rem 1rem' }}>←</button>
                     <p style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '1.125rem' }}>{formatDate(selectedGoalDate)}</p>
                     <button onClick={() => setSelectedGoalDate(changeDate(selectedGoalDate, 1))} style={{ ...btnBase, background: '#374151', padding: '0.6rem 1rem' }}>→</button>
                   </div>
-
-                  {/* Tag filter */}
                   <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', marginBottom: '1.5rem', paddingBottom: '0.25rem' }}>
                     <button onClick={() => setSelectedGoalTag('all')} style={{ ...btnBase, background: selectedGoalTag === 'all' ? '#374151' : '#1f2937', border: '1px solid #374151', padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>全て</button>
                     {tags.map(t => (
-                      <button key={t} onClick={() => setSelectedGoalTag(t)} style={{ ...btnBase, background: selectedGoalTag === t ? tagColor[t] || '#ea580c' : '#1f2937', border: '1px solid #374151', padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>{t}</button>
+                      <button key={t} onClick={() => setSelectedGoalTag(t)} style={{ ...btnBase, background: selectedGoalTag === t ? tagColor[t] || '#6b7280' : '#1f2937', border: '1px solid #374151', padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>{t}</button>
                     ))}
                   </div>
-
-                  {/* Goal cards */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                     {filteredGoals.length === 0
                       ? <div style={{ ...card, textAlign: 'center', color: '#9ca3af', padding: '3rem' }}>このカテゴリに目標がありません</div>
@@ -473,8 +391,6 @@
                         ))
                     }
                   </div>
-
-                  {/* Add goal */}
                   {!showGoalForm
                     ? <button onClick={() => setShowGoalForm(true)} style={{ ...btnBase, background: '#374151', border: '1px solid #4b5563', width: '100%', padding: '0.875rem' }}>＋ 目標を追加</button>
                     : <div style={card}>
@@ -499,9 +415,9 @@
               ) : (
                 <>
                   {/* Tag tabs */}
-                  <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', marginBottom: '1.5rem', paddingBottom: '0.25rem', borderBottom: '1px solid #374151' }}>
+                  <div style={{ display: 'flex', gap: 0, overflowX: 'auto', marginBottom: '1.5rem', borderBottom: '1px solid #374151' }}>
                     {['all', ...tags].map(t => (
-                      <button key={t} onClick={() => setSelectedGoalTag(t)} style={{ background: 'transparent', color: selectedGoalTag === t ? 'white' : '#6b7280', fontWeight: selectedGoalTag === t ? 'bold' : 'normal', padding: '0.5rem 1rem', borderBottom: '2px solid ' + (selectedGoalTag === t ? 'white' : 'transparent'), borderRadius: 0, whiteSpace: 'nowrap' }}>
+                      <button key={t} onClick={() => setSelectedGoalTag(t)} style={{ background: 'transparent', color: selectedGoalTag === t ? 'white' : '#6b7280', fontWeight: selectedGoalTag === t ? 'bold' : 'normal', padding: '0.6rem 1rem', borderBottom: '2px solid ' + (selectedGoalTag === t ? 'white' : 'transparent'), borderRadius: 0, whiteSpace: 'nowrap' }}>
                         {t === 'all' ? '全て' : t}
                       </button>
                     ))}
@@ -514,55 +430,97 @@
                     ))}
                   </div>
 
-                  {/* Overall pie */}
                   {goals.length > 0 && (
-                    <div style={{ ...card, marginBottom: '1.5rem' }}>
-                      <h2 style={{ fontWeight: 'bold', marginBottom: '1.25rem' }}>総合成果（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}）</h2>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <DonutChart data={getOverallPieData(selectedGoalTag)} size={200} />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
-                          {[
-                            { label: 'MAX達成',  color: '#16a34a', key: 'maxCount'  },
-                            { label: 'MORE達成', color: '#2563eb', key: 'moreCount' },
-                            { label: 'MIN達成',  color: '#ea580c', key: 'minCount'  }
-                          ].map(({ label, color, key }) => {
-                            const total = getGoalStats(selectedGoalTag).reduce((s, g) => s + g[key], 0);
-                            return (
-                              <div key={key} style={{ backgroundColor: '#374151', borderRadius: '0.5rem', padding: '0.875rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                  <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: color }} />
-                                  <span style={{ color: '#d1d5db', fontSize: '0.875rem' }}>{label}</span>
+                    <>
+                      {/* グラフ① 総合成果（未達成含む） */}
+                      <div style={{ ...card, marginBottom: '1.5rem' }}>
+                        <h2 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                          総合成果（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}・{periodLabel}）
+                        </h2>
+                        <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginBottom: '1.25rem' }}>期間全体の日数に対するレベル別達成割合（未達成含む）</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                          <div style={{ flexShrink: 0 }}>
+                            <DonutChart data={getOverallPieData(selectedGoalTag)} size={200} />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, minWidth: '150px' }}>
+                            {[
+                              { label: 'MAX達成',  color: '#16a34a', key: 'maxCount'  },
+                              { label: 'MORE達成', color: '#2563eb', key: 'moreCount' },
+                              { label: 'MIN達成',  color: '#ea580c', key: 'minCount'  }
+                            ].map(({ label, color, key }) => {
+                              const total = getGoalStats(selectedGoalTag).reduce((s, g) => s + g[key], 0);
+                              return (
+                                <div key={key} style={{ backgroundColor: '#374151', borderRadius: '0.5rem', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: color }} />
+                                    <span style={{ color: '#d1d5db', fontSize: '0.875rem' }}>{label}</span>
+                                  </div>
+                                  <span style={{ color, fontWeight: 900, fontSize: '1.2rem' }}>{total}回</span>
                                 </div>
-                                <span style={{ color, fontWeight: 900, fontSize: '1.25rem' }}>{total}回</span>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
-                    </div>
+
+                      {/* グラフ② 達成レベル内訳（記録あり日のみ） */}
+                      <div style={{ ...card, marginBottom: '1.5rem' }}>
+                        <h2 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                          達成レベル内訳（{selectedGoalTag === 'all' ? '全て' : selectedGoalTag}・{periodLabel}）
+                        </h2>
+                        <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginBottom: '1.25rem' }}>記録した日のうち MIN / MORE / MAX がそれぞれ何割か</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                          <div style={{ flexShrink: 0 }}>
+                            <DonutChart data={recordedLevel.data} size={200} />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, minWidth: '150px' }}>
+                            {[
+                              { label: 'MAX',  count: recordedLevel.maxT,  color: '#16a34a' },
+                              { label: 'MORE', count: recordedLevel.moreT, color: '#2563eb' },
+                              { label: 'MIN',  count: recordedLevel.minT,  color: '#ea580c' }
+                            ].map(({ label, count, color }) => {
+                              const pct = recordedLevel.total > 0 ? Math.round(count / recordedLevel.total * 100) : 0;
+                              return (
+                                <div key={label} style={{ backgroundColor: '#374151', borderRadius: '0.5rem', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: color }} />
+                                    <span style={{ color: '#d1d5db', fontSize: '0.875rem' }}>{label}</span>
+                                  </div>
+                                  <span style={{ color, fontWeight: 900, fontSize: '1.1rem' }}>
+                                    {count}回 <span style={{ fontSize: '0.8rem', opacity: 0.75 }}>({pct}%)</span>
+                                  </span>
+                                </div>
+                              );
+                            })}
+                            <p style={{ color: '#6b7280', fontSize: '0.75rem', textAlign: 'right' }}>記録合計 {recordedLevel.total}日</p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
 
-                  {/* Per-goal donuts */}
+                  {/* 目標ごとのグラフ */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {getGoalStats(selectedGoalTag).length === 0
                       ? <div style={{ ...card, textAlign: 'center', color: '#9ca3af', padding: '3rem' }}>このカテゴリに目標がありません</div>
                       : getGoalStats(selectedGoalTag).map((stat, i) => (
                           <div key={i} style={card}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                              <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem' }}>{stat.name}</h3>
-                              <span style={{ color: '#fb923c', fontWeight: 900, fontSize: '1.5rem' }}>{stat.achievement}%</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+                              <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem', paddingTop: '0.3rem' }}>{stat.name}</h3>
+                              <div style={{ textAlign: 'right' }}>
+                                <p style={{ color: '#9ca3af', fontSize: '0.7rem', marginBottom: '0.1rem' }}>達成率（{periodLabel}）</p>
+                                <span style={{ color: '#fb923c', fontWeight: 900, fontSize: '1.5rem' }}>{stat.achievement}%</span>
+                              </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <div style={{ flexShrink: 0 }}>
                                 <DonutChart data={stat.pieData} size={160} />
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 {[
-                                  { label: 'MAX',  count: stat.maxCount,  color: '#16a34a' },
-                                  { label: 'MORE', count: stat.moreCount, color: '#2563eb' },
-                                  { label: 'MIN',  count: stat.minCount,  color: '#ea580c' },
+                                  { label: 'MAX',   count: stat.maxCount,  color: '#16a34a' },
+                                  { label: 'MORE',  count: stat.moreCount, color: '#2563eb' },
+                                  { label: 'MIN',   count: stat.minCount,  color: '#ea580c' },
                                   { label: '未達成', count: Math.max(0, stat.totalDays - stat.totalAchieved), color: '#4b5563' }
                                 ].map(d => (
                                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
